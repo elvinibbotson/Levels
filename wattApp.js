@@ -15,21 +15,44 @@ function pad(n) {
 	
 // GLOBAL VARIABLES
 var scr={}; // screen size .w & .h and cursor coordinates .x & .y
-db=null;
-logs=[];
-log=null;
-logIndex=null;
-currentLog=null;
-tags=[];
-canvas=null;
-lastSave=-1;
-months="JanFebMarAprMayJunJulAugSepOctNovDec";
+var db=null;
+var logs=[];
+var log=null;
+var logIndex=null;
+var currentLog=null;
+var dragStart={};
+var canvas=null;
+var lastSave=-1;
+var months="JanFebMarAprMayJunJulAugSepOctNovDec";
 
 // EVENT LISTENERS
 
-// VIEW BUTTON
+// DRAG TO GO BACK
+document.body.addEventListener('touchstart', function(event) {
+    console.log(event.changedTouches.length+" touches");
+    dragStart.x=event.changedTouches[0].clientX;
+    dragStart.y=event.changedTouches[0].clientY;
+    console.log('start drag at '+dragStart.x+','+dragStart.y);
+})
+
+document.body.addEventListener('touchend', function(event) {
+    var drag={};
+    drag.x=dragStart.x-event.changedTouches[0].clientX;
+    drag.y=dragStart.y-event.changedTouches[0].clientY;
+    console.log('drag '+drag.x+','+drag.y);
+    if(Math.abs(drag.y)>50) return; // ignore vertical drags
+    if(drag.x<-50) { // drag right to decrease depth...
+        alert("show graph view");
+	    // account=null;
+	    // toggleDialog('txDialog',false);
+	    // listAccounts();
+    }
+})
+
+/* VIEW BUTTON
 id('buttonNew').addEventListener('click', function() {
 });
+*/
 
 // NEW BUTTON
 id('buttonNew').addEventListener('click', function() { // show the log dialog
