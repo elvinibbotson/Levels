@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+  	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  	<title>watt</title>
+  	<link rel="stylesheet" type="text/css" href="wattStyles.css">
+  	<link rel="manifest" href="wattManifest.json">
+  	<meta name="application-name" content="watt">
+</head>
+
+<body>
+<header class="header">
+    <div id="heading">
+        <span id="headerTitle">&nbsp;end of </span><span class='red'>&nbsp;grid</span><span class='green'>&nbsp;PV</span><span class='blue'>&nbsp;yield</span><span class='orange'>&nbsp;input</span><span class='yellow'>&nbsp;solar</span>
+        <!--button id='menuButton' class='menu-button'></button-->
+    </div>
+</header>
+<div id="listPanel"><ul id="list" class="logList"></ul></div>
+<div id='graphPanel'><canvas id='canvas' x='0' y='0' width='100%' height='100%'></canvas></div>
+<div id='buttonView' class='round-button'><img src='graphButton24px.svg'/></div>
+<div id='buttonNew' class='round-button'><img src='newButton24px.svg'/></div>
+  
+<div id="importDialog" class="dialog">
+	<div class="dialog-title">Load from saved file</div>
+	<input type="file" id="fileChooser">
+	<div class="dialog-body">Imported data will replace any records you already have.</div>
+    <div class="dialog-buttons">
+		<button id="buttonCancelImport" class="cancel-button"></button>
+	</div>
+</div>
+
+<div id="logDialog" class="dialog">
+    <div class="dialog-body">date <input type="date" id="logDate"/><span class='right'>units: kWh</span></div>
+    <div class="dialog-body">grid <input type='number' id='logGrid' min='0' max='99999'/> PV <input type='number' id='logPV' min='0' max='99999'/></div>
+    <div class="dialog-body">HP yield <input type='number' id='logYield' min='0' max='99999'/> for <input type='number' id='logCons' min='0' max='99999'/></div>
+    <div class="dialog-body">thermal solar yield: <input type='number' id='logSolar' min='0' max='99999'/></div>
+    <div class="dialog-buttons">
+	    <button id="buttonDeleteLog" class="delete-button"></button>
+	  	<button id="buttonCancelLog" class="cancel-button"></button>
+      	<button id="buttonSaveLog" class="save-button"></button>  
+    </div>
+</div>
+
+<div id="deleteDialog" class="dialog">
+	<div class="dialog-title">Delete</div>
+	<div  id="deleteText" class="dialog-body">text</div>
+	<div class="dialog-buttons">
+        <button id="buttonDeleteConfirm" class="delete-button"></button>
+       	<button id="buttonCancelDelete" class="cancel-button"></button>
+	</div>
+</div>
+
+<script src="wattApp.js" async></script>
+
+</body>
+
+</html>
