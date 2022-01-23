@@ -20,8 +20,12 @@ var logs=[];
 var log=null;
 var logIndex=null;
 var currentLog=null;
+var view='list';
 var dragStart={};
 var canvas=null;
+var canvasL=0;
+var monthW=0;
+var kWh=0;
 var lastSave=-1;
 var months="JanFebMarAprMayJunJulAugSepOctNovDec";
 
@@ -40,19 +44,24 @@ document.body.addEventListener('touchend', function(event) {
     drag.x=dragStart.x-event.changedTouches[0].clientX;
     drag.y=dragStart.y-event.changedTouches[0].clientY;
     console.log('drag '+drag.x+','+drag.y);
-    if(Math.abs(drag.y)>50) return; // ignore vertical drags
-    if(drag.x<-50) { // drag right to decrease depth...
-        alert("show graph view");
-	    // account=null;
-	    // toggleDialog('txDialog',false);
-	    // listAccounts();
+    if(view=='list') {
+    	if(Math.abs(drag.y)>50) return; // ignore vertical drags
+    	if(Math.abs(drag.x)>50) {
+    		// alert("show graph view");
+    		view='graph';
+    		drawGraph();
+    	}
+    }
+    else {
+    	if(Math.abs(drag.x)>50) return; // ignore horizontal drags
+    	if(Math.abs(drag.y)>50) {
+    		// alert("show list view");
+    		view='list';
+    		id('graphPanel').style.display='none';
+    		// populateList();
+    	}
     }
 })
-
-/* VIEW BUTTON
-id('buttonNew').addEventListener('click', function() {
-});
-*/
 
 // NEW BUTTON
 id('buttonNew').addEventListener('click', function() { // show the log dialog
@@ -230,21 +239,26 @@ function populateList() {
 
 // DRAW GRAPH
 function drawGraph() {
-	var x=0;
-	var ch=scr.h/4;
-	var h=ch/100;
-	var y=ch;
-	// last.distance=last.percent=0;
+	console.log('GRAPH');
+	id('graphPanel').style.display='block';
+	var firstMonth=parseInt(logs[0].date.substr(2,2)*12)+parseInt(logs[0].date.substr(5,2))-1;
+	var lastMonth=parseInt(logs[logs.length-1].date.substr(2,2))*12+parseInt(logs[logs.length-1].date.substr(5,2))-1;
+	console.log('graph spans months '+firstMonth+'-'+lastMonth);
+	canvasL=(firstMonth-lastMonth+11)*monthW;
+	console.log('canvasL is '+canvasL+'px');
+	// return;
 	canvas.strokeStyle='#ffff00';
 	canvas.lineWidth=3;
 	canvas.beginPath();
+	var y=scr.h;
+	var x=canvasL;
+	console.log('graph starts at '+x+','+y);
 	canvas.moveTo(x,y);
-	for(var i=0;i<logs.length;i++) { // plot trips and charges
-			console.log('draw charge bar '+i)
-			x+=logs[i].distance*5; // 5 px/mile
-			y=ch-logs[i].percent*h; // h px/%
+	for(var i=1;i<logs.length;i++) { // plot trips and charges
+			x+=i*monthW;
+			y=scr.h-(logs[i].grid-logs[i-1].grid)*kWh;
+			console.log('point '+i+' at '+x+','+y);
 			canvas.lineTo(x,y);
-			canvas.arc(x,y,3,0,2*Math.PI,true);
 			canvas.moveTo(x,y);
 	}
     canvas.stroke();
@@ -337,8 +351,12 @@ function backup() {
 scr.w=screen.width;
 scr.h=screen.height;
 console.log('screen size: '+scr.w+'x'+scr.h+'px');
+monthW=scr.w/14; // 14 months visible in graph
+kWh=scr.h/1500; // graph height equivalent to 1500kW 
+console.log('monthW: '+monthW+'px');
 id("canvas").width=scr.w;
-id("canvas").height=scr.h/2;
+id("canvas").height=scr.h;
+console.log('canvas size: '+id("canvas").width+'x'+id("canvas").height);
 canvas=id('canvas').getContext('2d');
 lastSave=window.localStorage.getItem('wattSave'); // get month of last backup
 console.log('lastSave: '+lastSave);
