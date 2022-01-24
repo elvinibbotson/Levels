@@ -24,6 +24,7 @@ var view='list';
 var dragStart={};
 var canvas=null;
 var canvasL=0;
+var canvasH=0;
 var monthW=0;
 var kWh=0;
 var lastSave=-1;
@@ -254,7 +255,7 @@ function drawGraph() {
 	for(var i=1;i<logs.length;i++) {
 		var val=logs[i].grid-logs[i-1].grid; // kWh for month
 		var x=i*monthW;
-		var y=scr.h-val*kWh;
+		var y=canvasH-val*kWh;
 		if(i<2) canvas.moveTo(x,y);
 		else canvas.lineTo(x,y);
 		console.log('point '+i+' at '+x+','+y);
@@ -266,7 +267,7 @@ function drawGraph() {
 	for(var i=1;i<logs.length;i++) { 
 		val=logs[i].pv-logs[i-1].pv; // kWh for month
 		x=i*monthW;
-		y=scr.h-val*kWh;
+		y=canvasH-val*kWh;
 		if(i<2) canvas.moveTo(x,y);
 		else canvas.lineTo(x,y);
 		console.log('point '+i+' at '+x+','+y);
@@ -367,7 +368,7 @@ monthW=scr.w/14; // 14 months visible in graph
 kWh=scr.h/1500; // graph height equivalent to 1500kW 
 console.log('monthW: '+monthW+'px');
 id("canvas").width=scr.w;
-id("canvas").height=scr.h;
+id("canvas").height=canvasH=scr.h-64;
 console.log('canvas size: '+id("canvas").width+'x'+id("canvas").height);
 canvas=id('canvas').getContext('2d');
 lastSave=window.localStorage.getItem('wattSave'); // get month of last backup
