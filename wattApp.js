@@ -245,8 +245,8 @@ function drawGraph() {
 	var firstMonth=parseInt(logs[1].date.substr(2,2)*12)+parseInt(logs[1].date.substr(5,2))-1;
 	var lastMonth=parseInt(logs[logs.length-1].date.substr(2,2))*12+parseInt(logs[logs.length-1].date.substr(5,2))-1;
 	console.log('graph spans months '+firstMonth+'-'+lastMonth);
-	id("graphPanel").style.width=(lastMonth-firstMonth)*monthW;
-	canvasL=(firstMonth-lastMonth+11)*monthW;
+	id("graphPanel").style.width=(lastMonth-firstMonth)*monthW+'px';
+	canvasL=(firstMonth-lastMonth+14)*monthW;
 	console.log('canvasL is '+canvasL+'px');
 	id('graphPanel').style.left=canvasL+'px';
 	// first draw grid power usage
@@ -256,7 +256,7 @@ function drawGraph() {
 	for(var i=1;i<logs.length;i++) {
 		var val=logs[i].grid-logs[i-1].grid; // kWh for month
 		var x=i*monthW;
-		var y=id('canvas').height-val*kWh;
+		var y=id('canvas').height-64-val*kWh;
 		if(i<2) canvas.moveTo(x,y);
 		else canvas.lineTo(x,y);
 		console.log('point '+i+' at '+x+','+y);
@@ -268,7 +268,7 @@ function drawGraph() {
 	for(var i=1;i<logs.length;i++) { 
 		val=logs[i].pv-logs[i-1].pv; // kWh for month
 		x=i*monthW;
-		y=id('canvas').height-val*kWh;
+		y=id('canvas').height-64-val*kWh;
 		if(i<2) canvas.moveTo(x,y);
 		else canvas.lineTo(x,y);
 		console.log('point '+i+' at '+x+','+y);
@@ -280,7 +280,7 @@ function drawGraph() {
 	for(var i=1;i<logs.length;i++) { 
 		val=logs[i].yield-logs[i-1].yield; // kWh for month
 		x=i*monthW;
-		y=id('canvas').height-val*kWh;
+		y=id('canvas').height-64-val*kWh;
 		if(i<2) canvas.moveTo(x,y);
 		else canvas.lineTo(x,y);
 		console.log('point '+i+' at '+x+','+y);
@@ -381,7 +381,7 @@ monthW=scr.w/14; // 14 months visible in graph
 kWh=scr.h/1500; // graph height equivalent to 1500kW 
 console.log('monthW: '+monthW+'px');
 id("canvas").width=scr.w;
-id("canvas").height=scr.h-64;
+id("canvas").height=scr.h;
 console.log('canvas size: '+id("canvas").width+'x'+id("canvas").height);
 canvas=id('canvas').getContext('2d');
 lastSave=window.localStorage.getItem('wattSave'); // get month of last backup
