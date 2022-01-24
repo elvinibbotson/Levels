@@ -27,7 +27,8 @@ var canvasL=0;
 var monthW=0;
 var kWh=0;
 var lastSave=-1;
-var months="JanFebMarAprMayJunJulAugSepOctNovDec";
+var months='JFMAMJJASOND';
+// var months="JanFebMarAprMayJunJulAugSepOctNovDec";
 
 // EVENT LISTENERS
 
@@ -241,27 +242,39 @@ function populateList() {
 function drawGraph() {
 	console.log('GRAPH');
 	id('graphPanel').style.display='block';
-	var firstMonth=parseInt(logs[0].date.substr(2,2)*12)+parseInt(logs[0].date.substr(5,2))-1;
+	// start from second month, logging kWh between month ends
+	var firstMonth=parseInt(logs[1].date.substr(2,2)*12)+parseInt(logs[1].date.substr(5,2))-1;
 	var lastMonth=parseInt(logs[logs.length-1].date.substr(2,2))*12+parseInt(logs[logs.length-1].date.substr(5,2))-1;
 	console.log('graph spans months '+firstMonth+'-'+lastMonth);
 	canvasL=(firstMonth-lastMonth+11)*monthW;
 	console.log('canvasL is '+canvasL+'px');
-	// return;
-	canvas.strokeStyle='#ffff00';
+	// first draw grid power usage
+	canvas.strokeStyle='tomato';
 	canvas.lineWidth=3;
 	canvas.beginPath();
-	var y=scr.h;
-	var x=canvasL;
-	console.log('graph starts at '+x+','+y);
-	canvas.moveTo(x,y);
-	for(var i=1;i<logs.length;i++) { // plot trips and charges
-			x+=i*monthW;
-			y=scr.h-(logs[i].grid-logs[i-1].grid)*kWh;
-			console.log('point '+i+' at '+x+','+y);
-			canvas.lineTo(x,y);
-			canvas.moveTo(x,y);
+	for(var i=1;i<logs.length;i++) {
+		var val=logs[i].grid-logs[i-1].grid; // kWh for month
+		var x=i*monthW;
+		var y=scr.h-val*kWh;
+		if(i<2) canvas.moveTo(x,y);
+		else canvas.lineTo(x,y);
+		console.log('point '+i+' at '+x+','+y);
 	}
     canvas.stroke();
+    // next draw PV yield
+    canvas.strokeStyle='lightgreen';
+    canvas.beginPath();
+	for(var i=1;i<logs.length;i++) { 
+		val=logs[i].pv-logs[i-1].pv; // kWh for month
+		x=i*monthW;
+		y=scr.h-val*kWh;
+		if(i<2) canvas.moveTo(x,y);
+		else canvas.lineTo(x,y);
+		console.log('point '+i+' at '+x+','+y);
+	}
+	canvas.stroke();
+	// repeat for HP yield and input and solar
+	// then draw kWh and months along axes
 }
 
 function selectLog() {
