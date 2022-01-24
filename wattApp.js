@@ -27,8 +27,7 @@ var canvasL=0;
 var monthW=0;
 var kWh=0;
 var lastSave=-1;
-var months='JFMAMJJASOND';
-// var months="JanFebMarAprMayJunJulAugSepOctNovDec";
+var months="JanFebMarAprMayJunJulAugSepOctNovDec";
 
 // EVENT LISTENERS
 
