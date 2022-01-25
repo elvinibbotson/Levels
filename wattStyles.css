@@ -81,7 +81,7 @@ input {
   overflow-y: scroll;
   -webkit-overflow-scrolling: touch;
   position: relative;
-  background-color: gray;
+  background-color: dimgray;
 }
 
 #graphPanel {
@@ -178,31 +178,21 @@ input {
 	right: 5px;
 }
 .red {
-	color: black;
-	background-color: tomato;
+	color: tomato;
 }
 .yellow {
-	color: black;
-	background-color: yellow;
+	color: yellow;
 }
 .blue {
-	color: black;
-	background-color: skyblue;
+	color: skyblue;
 }
 .green {
-	color: black;
-	background-color: lightgreen;
+	color: lightgreen;
 }
 .orange {
-	color: black;
-	background-color: orange;
+	color: orange;
 }
-.white {
-	background-color: white;
-}
-.black {
-	background-color: black;
-}
+
 .dialog-title {
   padding-top: 20px;
   font-size: 1em;

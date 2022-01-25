@@ -240,13 +240,15 @@ function populateList() {
 // DRAW GRAPH
 function drawGraph() {
 	console.log('GRAPH');
+	var letters='JFMAMJJASOND';
 	id('graphPanel').style.display='block';
 	// start from second month, logging kWh between month ends
 	var firstMonth=parseInt(logs[1].date.substr(2,2)*12)+parseInt(logs[1].date.substr(5,2))-1;
 	var lastMonth=parseInt(logs[logs.length-1].date.substr(2,2))*12+parseInt(logs[logs.length-1].date.substr(5,2))-1;
 	console.log('graph spans months '+firstMonth+'-'+lastMonth);
-	id("graphPanel").style.width=(lastMonth-firstMonth)*monthW+'px';
-	canvasL=(firstMonth-lastMonth+14)*monthW;
+	id("graphPanel").style.width=(lastMonth-firstMonth+1)*monthW+'px';
+	id("canvas").width=(lastMonth-firstMonth+1)*monthW;
+	canvasL=(firstMonth-lastMonth+13)*monthW;
 	console.log('canvasL is '+canvasL+'px');
 	id('graphPanel').style.left=canvasL+'px';
 	// first draw grid power usage
@@ -288,6 +290,18 @@ function drawGraph() {
 	canvas.stroke();
 	// repeat for HP input and solar
 	// then draw kWh and months along axes
+	canvas.font='20px Monospace';
+	canvas.strokeStyle='white';
+	canvas.lineWidth=1;
+	for(var i=1;i<logs.length;i++) {
+		x=i*monthW;
+		var m=parseInt(logs[i].date.substr(5,2))-1;
+		canvas.strokeText(letters.substr(m,1),x,scr.h-16);
+		if(m<1) {
+			var y=logs[i].date.substr(0,4);
+			canvas.strokeText(y,x,scr.h-34);
+		}
+	}
 }
 
 function selectLog() {
