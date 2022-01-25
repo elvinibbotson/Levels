@@ -65,7 +65,8 @@ input {
 	font-weight: bold;
 	font-size: 1.5em;
 	color: white;
-	background-color: black;
+	background-color: dimgray;
+	border-style: white, solid, 5px;
 }
 
 #listPanel {
@@ -109,7 +110,7 @@ input {
 	height: 50px;
 	border: 0px solid #222;
 	border-radius: 50%;
-	background:dimgray;
+	background: black;
 	box-shadow: 0,0,3px,gray;
 	z-index: 50;
 }
@@ -130,7 +131,12 @@ input {
 	right: 20px;
 	bottom: 20px;
 }
-  
+
+.header {
+	border-bottom-color: white;
+	border-bottom-width: 5px;
+	border-bottom-style: solid;
+} 
 .logList {
     margin: 0;
     list-style: none;
@@ -139,7 +145,6 @@ input {
     transition: opacity 0.2s ease-in-out;
     padding: 0 0.5em;
 }
-
 .log-item {
 	margin-bottom: 10px;
 	display: block;
@@ -177,20 +182,20 @@ input {
 	float: right;
 	right: 5px;
 }
-.red {
-	color: tomato;
-}
-.yellow {
-	color: yellow;
-}
 .blue {
 	color: skyblue;
 }
 .green {
 	color: lightgreen;
 }
+.plum {
+	color: plum;
+}
 .orange {
 	color: orange;
+}
+.yellow {
+	color: yellow;
 }
 
 .dialog-title {
