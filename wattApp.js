@@ -36,14 +36,20 @@ document.body.addEventListener('touchstart', function(event) {
     console.log(event.changedTouches.length+" touches");
     dragStart.x=event.changedTouches[0].clientX;
     dragStart.y=event.changedTouches[0].clientY;
-    console.log('start drag at '+dragStart.x+','+dragStart.y);
+    console.log('start drag at '+dragStart.x+','+dragStart.y+' view is '+view);
+})
+
+document.body.addEventListener('touchmove', function(event) {
+	var x=event.changedTouches[0].clientX-dragStart.x;
+	x+=canvasL;
+	id('graphPanel').style.left=x+'px';
 })
 
 document.body.addEventListener('touchend', function(event) {
     var drag={};
     drag.x=dragStart.x-event.changedTouches[0].clientX;
     drag.y=dragStart.y-event.changedTouches[0].clientY;
-    console.log('drag '+drag.x+','+drag.y);
+    console.log('drag '+drag.x+','+drag.y+' view is '+view);
     if(view=='list') {
     	if(Math.abs(drag.y)>50) return; // ignore vertical drags
     	if(Math.abs(drag.x)>50) {
@@ -53,6 +59,7 @@ document.body.addEventListener('touchend', function(event) {
     	}
     }
     else {
+    	canvasL-=drag.x;
     	if(Math.abs(drag.x)>50) return; // ignore horizontal drags
     	if(Math.abs(drag.y)>50) {
     		// alert("show list view");
@@ -60,6 +67,12 @@ document.body.addEventListener('touchend', function(event) {
     		id('graphPanel').style.display='none';
     		// populateList();
     	}
+    	/*
+    	else if(Math.abs(drag.x)>monthW) {
+    		canvasL-=drag.x;
+    		id('graphPanel').style.left=canvasL+'px';
+    	}
+    	*/
     }
 })
 
@@ -244,11 +257,11 @@ function drawGraph() {
 	// start from second month, logging kWh between month ends
 	var firstMonth=parseInt(logs[1].date.substr(2,2)*12)+parseInt(logs[1].date.substr(5,2))-1;
 	var lastMonth=parseInt(logs[logs.length-1].date.substr(2,2))*12+parseInt(logs[logs.length-1].date.substr(5,2))-1;
-	var n=lastMonth-firstMonth+1;
+	var n=lastMonth-firstMonth;
 	console.log('graph spans months '+firstMonth+'-'+lastMonth);
 	id("graphPanel").style.width=n*monthW+'px';
 	id("canvas").width=n*monthW;
-	canvasL=(15-n)*monthW;
+	canvasL=(14-n)*monthW;
 	alert('screen width: '+scr.w+'; '+logs.length+'logs; canvasL is '+canvasL+'; width is '+id('canvas').width);
 	id('graphPanel').style.left=canvasL+'px';
 	id('graphPanel').style.display='block';
@@ -319,21 +332,21 @@ function drawGraph() {
 	canvas.fillStyle='white';
 	canvas.lineWidth=1;
 	y=(scr.h-margin)/15; // 100kWh intervals - px
-	for(i=0;i<15;i++) canvas.fillText(i*100,canvasL,scr.h-margin-i*100*kWh);
-	canvas.stokeStyle='silver';
+	for(i=0;i<15;i++) canvas.fillText(i*100,-1*canvasL,scr.h-margin-i*100*kWh); // 0-1500 (kWh)
+	canvas.stokeStyle='gray';
 	canvas.beginPath();
 	for(i=0;i<15;i++) {
-		canvas.moveTo(canvasL,scr.h-margin-i*100*kWh);
-		canvas.lineTo(scr.w,scr.h-margin-i*100*kWh);
+		canvas.moveTo(0,scr.h-margin-i*100*kWh);
+		canvas.lineTo(id('canvas').width,scr.h-margin-i*100*kWh); // grey lines
 	}
 	canvas.stroke();
 	for(var i=1;i<logs.length;i++) {
 		x=(i-1)*monthW;
 		var m=parseInt(logs[i].date.substr(5,2))-1;
-		canvas.fillText(letters.substr(m,1),x,scr.h-margin+40);
+		canvas.fillText(letters.substr(m,1),x,scr.h-margin+40); // month letter
 		if(m<1) {
 			var year=logs[i].date.substr(0,4);
-			canvas.fillText(year,x,scr.h-margin+20);
+			canvas.fillText(year,x,scr.h-margin+20); // YYYY
 		}
 	}
 }
