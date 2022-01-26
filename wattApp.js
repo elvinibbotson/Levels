@@ -23,6 +23,7 @@ var currentLog=null;
 var view='list';
 var dragStart={};
 var canvas=null;
+var overlay=null;
 var canvasL=0;
 var monthW=0;
 var kWh=0;
@@ -55,6 +56,8 @@ document.body.addEventListener('touchend', function(event) {
     	if(Math.abs(drag.x)>50) {
     		// alert("show graph view");
     		view='graph';
+    		id('listPanel').style.display='none';
+    		id('heading').style.display='none';
     		drawGraph();
     	}
     }
@@ -65,14 +68,11 @@ document.body.addEventListener('touchend', function(event) {
     		// alert("show list view");
     		view='list';
     		id('graphPanel').style.display='none';
+    		id('graphOverlay').style.display='none';
+    		id('listPanel').style.display='block';
+    		id('heading').style.display='block';
     		// populateList();
     	}
-    	/*
-    	else if(Math.abs(drag.x)>monthW) {
-    		canvasL-=drag.x;
-    		id('graphPanel').style.left=canvasL+'px';
-    	}
-    	*/
     }
 })
 
@@ -262,9 +262,10 @@ function drawGraph() {
 	id("graphPanel").style.width=n*monthW+'px';
 	id("canvas").width=n*monthW;
 	canvasL=(14-n)*monthW;
-	alert('screen width: '+scr.w+'; '+logs.length+'logs; canvasL is '+canvasL+'; width is '+id('canvas').width);
+	console.log('screen width: '+scr.w+'; '+logs.length+'logs; canvasL is '+canvasL+'; width is '+id('canvas').width);
 	id('graphPanel').style.left=canvasL+'px';
 	id('graphPanel').style.display='block';
+	id('graphOverlay').style.display='block';
 	var margin=120; // bottom margin
 	// first draw grid power usage
 	canvas.strokeStyle='skyblue';
@@ -328,18 +329,30 @@ function drawGraph() {
 	}
 	canvas.stroke();
 	// then draw kWh and months along axes
-	canvas.font='20px Monospace';
-	canvas.fillStyle='white';
-	canvas.lineWidth=1;
+	overlay.font='20px Monospace';
+	overlay.fillStyle='skyblue';
+	overlay.fillText('grid',25,20);
+	overlay.fillStyle='lightgreen';
+	overlay.fillText('PV',100,20);
+	overlay.fillStyle='plum';
+	overlay.fillText('yield',175,20);
+	overlay.fillStyle='orange';
+	overlay.fillText('input',250,20);
+	overlay.fillStyle='yellow';
+	overlay.fillText('solar',325,20);
+	overlay.fillStyle='white';
+	overlay.lineWidth=1;
 	y=(scr.h-margin)/15; // 100kWh intervals - px
-	for(i=0;i<15;i++) canvas.fillText(i*100,-1*canvasL,scr.h-margin-i*100*kWh); // 0-1500 (kWh)
-	canvas.stokeStyle='gray';
-	canvas.beginPath();
+	for(i=0;i<13;i++) overlay.fillText(i*100,0,scr.h-margin-i*100*kWh); // kWh
+	// for(i=0;i<15;i++) overlay.fillText(i*100,-1*canvasL,scr.h-margin-i*100*kWh); // 0-1500 (kWh)
+	overlay.strokeStyle='silver';
+	overlay.beginPath();
 	for(i=0;i<15;i++) {
-		canvas.moveTo(0,scr.h-margin-i*100*kWh);
-		canvas.lineTo(id('canvas').width,scr.h-margin-i*100*kWh); // grey lines
+		overlay.moveTo(0,scr.h-margin-i*100*kWh);
+		overlay.lineTo(scr.w,scr.h-margin-i*100*kWh); // grey lines
+		// canvas.lineTo(id('canvas').width,scr.h-margin-i*100*kWh); // grey lines
 	}
-	canvas.stroke();
+	overlay.stroke();
 	for(var i=1;i<logs.length;i++) {
 		x=(i-1)*monthW;
 		var m=parseInt(logs[i].date.substr(5,2))-1;
@@ -444,7 +457,10 @@ console.log('monthW: '+monthW+'px');
 id("canvas").width=scr.w;
 id("canvas").height=scr.h;
 console.log('canvas size: '+id("canvas").width+'x'+id("canvas").height);
+id("overlay").width=scr.w;
+id("overlay").height=scr.h;
 canvas=id('canvas').getContext('2d');
+overlay=id('overlay').getContext('2d');
 lastSave=window.localStorage.getItem('wattSave'); // get month of last backup
 console.log('lastSave: '+lastSave);
 var request=window.indexedDB.open("wattDB");
