@@ -14,6 +14,7 @@ html {
   overflow: hidden; }
 
 body {
+/*
   display: -webkit-box;
   display: -webkit-flex;
   display: -ms-flexbox;
@@ -38,7 +39,9 @@ body {
       -ms-flex-line-pack: stretch;
           align-content: stretch;
   color: white;
-  background: "black" }
+  background: "black";
+  */
+}
  
 input {
 	font-size: 1.2em;
@@ -98,7 +101,6 @@ input {
 	overflow-x: scroll;
 	overflow-y: hidden;
 	-webkit-overflow-scrolling: touch;
-	flex-direction: row;
 	display: none;
 	z-index: 100;
 }

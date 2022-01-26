@@ -241,16 +241,18 @@ function populateList() {
 function drawGraph() {
 	console.log('GRAPH');
 	var letters='JFMAMJJASOND';
-	id('graphPanel').style.display='block';
 	// start from second month, logging kWh between month ends
 	var firstMonth=parseInt(logs[1].date.substr(2,2)*12)+parseInt(logs[1].date.substr(5,2))-1;
 	var lastMonth=parseInt(logs[logs.length-1].date.substr(2,2))*12+parseInt(logs[logs.length-1].date.substr(5,2))-1;
+	var n=lastMonth-firstMonth+1;
 	console.log('graph spans months '+firstMonth+'-'+lastMonth);
-	id("graphPanel").style.width=(lastMonth-firstMonth+1)*monthW+'px';
-	id("canvas").width=(lastMonth-firstMonth+1)*monthW;
-	canvasL=(firstMonth-lastMonth+14)*monthW;
+	id("graphPanel").style.width=n*monthW+'px';
+	id("canvas").width=n*monthW;
+	canvasL=(15-n)*monthW;
 	alert('screen width: '+scr.w+'; '+logs.length+'logs; canvasL is '+canvasL+'; width is '+id('canvas').width);
 	id('graphPanel').style.left=canvasL+'px';
+	id('graphPanel').style.display='block';
+	var margin=120; // bottom margin
 	// first draw grid power usage
 	canvas.strokeStyle='skyblue';
 	canvas.lineWidth=3;
@@ -258,7 +260,7 @@ function drawGraph() {
 	for(var i=1;i<logs.length;i++) {
 		var val=logs[i].grid-logs[i-1].grid; // kWh for month
 		var x=(i-1)*monthW;
-		var y=id('canvas').height-64-val*kWh;
+		var y=id('canvas').height-margin-val*kWh;
 		if(i<2) canvas.moveTo(x,y);
 		else canvas.lineTo(x,y);
 		console.log('blue '+i+' at '+x+','+y);
@@ -270,7 +272,7 @@ function drawGraph() {
 	for(var i=1;i<logs.length;i++) { 
 		val=logs[i].pv-logs[i-1].pv; // kWh for month
 		x=(i-1)*monthW;
-		y=id('canvas').height-64-val*kWh;
+		y=id('canvas').height-margin-val*kWh;
 		if(i<2) canvas.moveTo(x,y);
 		else canvas.lineTo(x,y);
 		console.log('green '+i+' at '+x+','+y);
@@ -282,7 +284,7 @@ function drawGraph() {
 	for(var i=1;i<logs.length;i++) { 
 		val=logs[i].yield-logs[i-1].yield; // kWh for month
 		x=(i-1)*monthW;
-		y=id('canvas').height-64-val*kWh;
+		y=id('canvas').height-margin-val*kWh;
 		if(i<2) canvas.moveTo(x,y);
 		else canvas.lineTo(x,y);
 		console.log('plum '+i+' at '+x+','+y);
@@ -294,7 +296,7 @@ function drawGraph() {
 	for(var i=1;i<logs.length;i++) { 
 		val=logs[i].cons-logs[i-1].cons; // kWh for month
 		x=(i-1)*monthW;
-		y=id('canvas').height-64-val*kWh;
+		y=id('canvas').height-margin-val*kWh;
 		if(i<2) canvas.moveTo(x,y);
 		else canvas.lineTo(x,y);
 		console.log('orange '+i+' at '+x+','+y);
@@ -306,7 +308,7 @@ function drawGraph() {
 	for(var i=1;i<logs.length;i++) { 
 		val=logs[i].solar-logs[i-1].solar; // kWh for month
 		x=(i-1)*monthW;
-		y=id('canvas').height-64-val*kWh;
+		y=id('canvas').height-margin-val*kWh;
 		if(i<2) canvas.moveTo(x,y);
 		else canvas.lineTo(x,y);
 		console.log('yellow '+i+' at '+x+','+y);
@@ -314,24 +316,24 @@ function drawGraph() {
 	canvas.stroke();
 	// then draw kWh and months along axes
 	canvas.font='20px Monospace';
-	canvas.strokeStyle='white';
+	canvas.fillStyle='white';
 	canvas.lineWidth=1;
-	y=(scr.h-100)/15; // 100kWh intervals - px
-	for(i=0;i<15;i++) canvas.strokeText(i*100,canvasL,scr.h-100-i*100*kWh);
+	y=(scr.h-margin)/15; // 100kWh intervals - px
+	for(i=0;i<15;i++) canvas.fillText(i*100,canvasL,scr.h-margin-i*100*kWh);
 	canvas.stokeStyle='silver';
 	canvas.beginPath();
 	for(i=0;i<15;i++) {
-		canvas.moveTo(canvasL,scr.h-100-i*100*kWh);
-		canvas.lineTo(scr.w,scr.h-100-i*100*kWh);
+		canvas.moveTo(canvasL,scr.h-margin-i*100*kWh);
+		canvas.lineTo(scr.w,scr.h-margin-i*100*kWh);
 	}
 	canvas.stroke();
 	for(var i=1;i<logs.length;i++) {
 		x=(i-1)*monthW;
 		var m=parseInt(logs[i].date.substr(5,2))-1;
-		canvas.strokeText(letters.substr(m,1),x,scr.h-64);
+		canvas.fillText(letters.substr(m,1),x,scr.h-margin+40);
 		if(m<1) {
 			var year=logs[i].date.substr(0,4);
-			canvas.strokeText(year,x,scr.h-100);
+			canvas.fillText(year,x,scr.h-margin+20);
 		}
 	}
 }
