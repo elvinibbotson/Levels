@@ -249,7 +249,7 @@ function drawGraph() {
 	id("graphPanel").style.width=(lastMonth-firstMonth+1)*monthW+'px';
 	id("canvas").width=(lastMonth-firstMonth+1)*monthW;
 	canvasL=(firstMonth-lastMonth+14)*monthW;
-	console.log('canvasL is '+canvasL+'px');
+	alert('screen width: '+scr.w+'; '+logs.length+'logs; canvasL is '+canvasL+'; width is '+id('canvas').width);
 	id('graphPanel').style.left=canvasL+'px';
 	// first draw grid power usage
 	canvas.strokeStyle='skyblue';
@@ -316,22 +316,22 @@ function drawGraph() {
 	canvas.font='20px Monospace';
 	canvas.strokeStyle='white';
 	canvas.lineWidth=1;
-	y=(scr.h-64)/15; // 100kWh intervals - px
-	for(i=0;i<15;i++) canvas.strokeText(i*100,canvasL,scr.h-64-i*100*kWh);
+	y=(scr.h-100)/15; // 100kWh intervals - px
+	for(i=0;i<15;i++) canvas.strokeText(i*100,canvasL,scr.h-100-i*100*kWh);
 	canvas.stokeStyle='silver';
 	canvas.beginPath();
 	for(i=0;i<15;i++) {
-		canvas.moveTo(canvasL,scr.h-64-i*100*kWh);
-		canvas.lineTo(scr.w,scr.h-64-i*100*kWh);
+		canvas.moveTo(canvasL,scr.h-100-i*100*kWh);
+		canvas.lineTo(scr.w,scr.h-100-i*100*kWh);
 	}
 	canvas.stroke();
 	for(var i=1;i<logs.length;i++) {
 		x=(i-1)*monthW;
 		var m=parseInt(logs[i].date.substr(5,2))-1;
-		canvas.strokeText(letters.substr(m,1),x,scr.h-32);
+		canvas.strokeText(letters.substr(m,1),x,scr.h-64);
 		if(m<1) {
 			var year=logs[i].date.substr(0,4);
-			canvas.strokeText(year,x,scr.h-50);
+			canvas.strokeText(year,x,scr.h-100);
 		}
 	}
 }
