@@ -335,11 +335,11 @@ function drawGraph() {
 	overlay.fillStyle='lightgreen';
 	overlay.fillText('PV',100,20);
 	overlay.fillStyle='plum';
-	overlay.fillText('yield',175,20);
+	overlay.fillText('yield',150,20);
 	overlay.fillStyle='orange';
-	overlay.fillText('input',250,20);
+	overlay.fillText('input',225,20);
 	overlay.fillStyle='yellow';
-	overlay.fillText('solar',325,20);
+	overlay.fillText('solar',300,20);
 	overlay.fillStyle='white';
 	overlay.lineWidth=1;
 	y=(scr.h-margin)/15; // 100kWh intervals - px
@@ -353,6 +353,8 @@ function drawGraph() {
 		// canvas.lineTo(id('canvas').width,scr.h-margin-i*100*kWh); // grey lines
 	}
 	overlay.stroke();
+	canvas.font='20px Monospace';
+	canvas.fillStyle='white';
 	for(var i=1;i<logs.length;i++) {
 		x=(i-1)*monthW;
 		var m=parseInt(logs[i].date.substr(5,2))-1;
