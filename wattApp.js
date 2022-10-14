@@ -32,6 +32,9 @@ var months="JanFebMarAprMayJunJulAugSepOctNovDec";
 
 // EVENT LISTENERS
 
+// DIAGNOSTICS BACKUP TEST
+id('heading').addEventListener('click',backup);
+
 // DRAG TO GO BACK
 document.body.addEventListener('touchstart', function(event) {
     console.log(event.changedTouches.length+" touches");
