@@ -416,7 +416,11 @@ id('buttonCancelImport').addEventListener('click',function() {
 // BACKUP
 function backup() {
   	console.log("save backup");
-	var fileName="watt.json";
+  	var fileName="watt";
+	var date=new Date();
+	fileName+=date.getFullYear();
+	fileName+=(date.getMonth()+1);
+	fileName+=date.getDate()+".json";
 	var dbTransaction=db.transaction('logs',"readwrite");
 	console.log("indexedDB transaction ready");
 	var dbObjectStore=dbTransaction.objectStore('logs');
