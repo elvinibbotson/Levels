@@ -24,6 +24,7 @@ input {
 #fileChooser {
 	margin: 20px;
 	font-size: 1.5em;
+	background-color: gray;
 }
 
 #logDate {
