@@ -22,15 +22,6 @@
 <div id='graphOverlay'><canvas id='overlay' x='0' y='0' width='100%' height='100%'></canvas></div>
 <!--div id='buttonView' class='round-button'><img src='graphButton24px.svg'/></div-->
 <div id='buttonNew' class='round-button'><img src='newButton24px.svg'/></div>
-  
-<div id="importDialog" class="dialog">
-	<div class="dialog-title">Load from saved file</div>
-	<input type="file" id="fileChooser">
-	<div class="dialog-body">Imported data will replace any records you already have.</div>
-    <div class="dialog-buttons">
-		<button id="buttonCancelImport" class="cancel-button"></button>
-	</div>
-</div>
 
 <div id="logDialog" class="dialog">
     <div class="dialog-body">date <input type="date" id="logDate"/><span class='right'>units: kWh</span></div>
@@ -50,6 +41,21 @@
 	<div class="dialog-buttons">
         <button id="buttonDeleteConfirm" class="delete-button"></button>
        	<button id="buttonCancelDelete" class="cancel-button"></button>
+	</div>
+</div>
+
+<div id='dataDialog' class='dialog'>
+	<button id='backupButton' class='text-button'>BACKUP</button>
+	<button id='importButton' class='text-button'>IMPORT</button>
+	<button id='dataCancelButton' class='text-button'>CANCEL</button>
+</div>
+
+<div id="importDialog" class="dialog">
+	<div class="dialog-title">Load from file</div>
+	<input type="file" id="fileChooser">
+	<div class="dialog-body">Imported data will replace any records you already have.</div>
+    <div class="dialog-buttons">
+		<button id="buttonCancelImport" class="cancel-button"></button>
 	</div>
 </div>
 

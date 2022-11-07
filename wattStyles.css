@@ -23,6 +23,7 @@ input {
 
 #fileChooser {
 	margin: 20px;
+	font-size: 1.5em;
 }
 
 #logDate {
@@ -42,7 +43,7 @@ input {
 	font-weight: bold;
 	font-size: 1.5em;
 	color: white;
-	background-color: dimgray;
+	background-color: black;
 	display='block';
 }
 
@@ -58,7 +59,7 @@ input {
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   position: relative;
-  background-color: dimgray;
+  background-color: #333;;
   display: block;
 }
 
@@ -86,16 +87,29 @@ input {
 	display: none;
 	z-index: 10;
 }
-  
+
+.text-button {
+	border: 2px solid white;
+	border-radius: 10px;
+	margin: 15px;
+	padding: 5px;
+	font-size:1.2em;
+	font-weight: bold;
+	color: white;
+	background-color:gray;
+	float: right;
+}
+
 .round-button {
 	display: block;
 	position: fixed;
+	right: 20px;
+	bottom: 20px;
 	width: 50px;
 	height: 50px;
-	border: 0px solid #222;
-	border-radius: 50%;
-	background: black;
-	box-shadow: 0,0,3px,gray;
+	border: 2px solid white;
+	border-radius: 10px;
+	background: gray;
 	z-index: 50;
 }
 
@@ -151,7 +165,7 @@ input {
 .dialog {
   position: fixed;
   left: 0;
-  bottom: 0;
+  top: 0;
   width: 100%;
   background: dimgray;
   display: none;
