@@ -131,11 +131,6 @@ input {
 	bottom: 20px;
 }
 
-.header {
-	border-bottom-color: white;
-	border-bottom-width: 1px;
-	border-bottom-style: solid;
-} 
 .logList {
     margin: 0;
     list-style: none;
