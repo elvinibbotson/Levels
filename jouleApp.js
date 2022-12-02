@@ -471,7 +471,7 @@ function backup() {
 // IMPORT FILE
 id("fileChooser").addEventListener('change',function() {
     var file=id('fileChooser').files[0];
-    console.log("file: "+file+" name: "+file.name);
+    alert("file: "+file+" name: "+file.name);
     var fileReader=new FileReader();
     fileReader.addEventListener('load', function(evt) {
 	    console.log("file read: "+evt.target.result);
@@ -499,6 +499,7 @@ id('confirmImport').addEventListener('click',function(event) {
 	var file=id('fileChooser').files[0];
     alert("file: "+file+" name: "+file.name);
     var fileReader=new FileReader();
+    /*
     fileReader.addEventListener('load', function(evt) {
 	    console.log("file read: "+evt.target.result);
     	var data=evt.target.result;
@@ -519,7 +520,14 @@ id('confirmImport').addEventListener('click',function(event) {
     	toggleDialog('importDialog',false);
     	alert("logs imported - restart");
     });
+    */
     fileReader.readAsText(file);
+    fileReader.onload=function() {
+    	alert('file read: '+fileReader.result);
+    }
+    fileReader.onerror=function() {
+    	alert('file error: '+fileReader.error);
+    }
 });
 id('cancelImport').addEventListener('click',function() {
     console.log('cancel import');
