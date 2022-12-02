@@ -497,7 +497,7 @@ id("fileChooser").addEventListener('change',function() {
 });
 id('confirmImport').addEventListener('click',function(event) {
 	var file=id('fileChooser').files[0];
-    alert("file: "+file+" name: "+file.name);
+    alert("read file: "+file+" name: "+file.name);
     var fileReader=new FileReader();
     /*
     fileReader.addEventListener('load', function(evt) {
@@ -523,10 +523,11 @@ id('confirmImport').addEventListener('click',function(event) {
     */
     fileReader.readAsText(file);
     fileReader.onload=function() {
-    	alert('file : '+fileReader.result);
+    	alert('file read: '+fileReader.result);
+    	
     }
     fileReader.onerror=function() {
-    	alert('error: '+fileReader.error);
+    	alert('read error: '+fileReader.error);
     }
 });
 id('cancelImport').addEventListener('click',function() {
