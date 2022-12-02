@@ -430,19 +430,22 @@ id('confirmImport').addEventListener('click',function(event) {
     	var json=JSON.parse(data);
     	alert("json: "+json);
     	var logs=json.logs;
-    	alert(logs.length+" logs loaded");
+    	// alert(logs.length+" logs loaded");
     	var dbTransaction=db.transaction('logs',"readwrite");
     	var dbObjectStore=dbTransaction.objectStore('logs');
+    	alert('database ready - save '+logs.length+' logs');
     	for(var i=0;i<logs.length;i++) {
     		console.log("add log "+i);
     		var request = dbObjectStore.add(logs[i]);
     		request.onsuccess = function(e) {
-    			console.log(logs.length+" logs added to database");
+    			console.log("log "+i+" added");
     		};
     		request.onerror = function(e) {console.log("error adding log");};
     	}
-    	toggleDialog('importDialog',false);
-    	alert("logs imported - restart");
+    	dbTransaction.oncomplete=function(e) {
+    		toggleDialog('importDialog',false);
+    		alert("logs imported - restart");
+    	}
     }
     fileReader.onerror=function() {
     	alert('read error: '+fileReader.error);
