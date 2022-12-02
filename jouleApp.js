@@ -523,10 +523,10 @@ id('confirmImport').addEventListener('click',function(event) {
     */
     fileReader.readAsText(file);
     fileReader.onload=function() {
-    	alert('file read: '+fileReader.result);
+    	alert('file : '+fileReader.result);
     }
     fileReader.onerror=function() {
-    	alert('file error: '+fileReader.error);
+    	alert('error: '+fileReader.error);
     }
 });
 id('cancelImport').addEventListener('click',function() {
