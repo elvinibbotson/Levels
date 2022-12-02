@@ -426,9 +426,9 @@ id('confirmImport').addEventListener('click',function(event) {
     var fileReader=new FileReader();
     fileReader.onload=function() {
     	var data=fileReader.result;
-    	alert('file read: '+data);
+    	console.log('file read');
     	var json=JSON.parse(data);
-    	console.log("json: "+json);
+    	alert("json: "+json);
     	var logs=json.logs;
     	alert(logs.length+" logs loaded");
     	var dbTransaction=db.transaction('logs',"readwrite");
