@@ -524,7 +524,23 @@ id('confirmImport').addEventListener('click',function(event) {
     fileReader.readAsText(file);
     fileReader.onload=function() {
     	alert('file read: '+fileReader.result);
-    	
+    	var data=evt.target.result;
+    	var json=JSON.parse(data);
+    	console.log("json: "+json);
+    	var logs=json.logs;
+    	console.log(logs.length+" logs loaded");
+    	var dbTransaction=db.transaction('logs',"readwrite");
+    	var dbObjectStore=dbTransaction.objectStore('logs');
+    	for(var i=0;i<logs.length;i++) {
+    		console.log("add log "+i);
+    		var request = dbObjectStore.add(logs[i]);
+    		request.onsuccess = function(e) {
+    			console.log(logs.length+" logs added to database");
+    		};
+    		request.onerror = function(e) {console.log("error adding log");};
+    	}
+    	toggleDialog('importDialog',false);
+    	alert("logs imported - restart");
     }
     fileReader.onerror=function() {
     	alert('read error: '+fileReader.error);
