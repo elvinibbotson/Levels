@@ -496,24 +496,30 @@ id("fileChooser").addEventListener('change',function() {
     fileReader.readAsText(file);
 });
 id('confirmImport').addEventListener('click',function(event) {
-	console.log("file read: "+event.target.result);
-   	var data=event.target.result;
-    var json=JSON.parse(data);
-    console.log("json: "+json);
-    var logs=json.logs;
-    console.log(logs.length+" logs loaded");
-    var dbTransaction=db.transaction('logs',"readwrite");
-    var dbObjectStore=dbTransaction.objectStore('logs');
-    for(var i=0;i<logs.length;i++) {
-    	console.log("add log "+i);
-    	var request = dbObjectStore.add(logs[i]);
-    	request.onsuccess = function(e) {
-    		console.log(logs.length+" logs added to database");
-    	};
-    	request.onerror = function(e) {console.log("error adding log");};
-    }
-    toggleDialog('importDialog',false);
-    alert("logs imported - restart");
+	var file=id('fileChooser').files[0];
+    alert("file: "+file+" name: "+file.name);
+    var fileReader=new FileReader();
+    fileReader.addEventListener('load', function(evt) {
+	    console.log("file read: "+evt.target.result);
+    	var data=evt.target.result;
+    	var json=JSON.parse(data);
+    	console.log("json: "+json);
+    	var logs=json.logs;
+    	console.log(logs.length+" logs loaded");
+    	var dbTransaction=db.transaction('logs',"readwrite");
+    	var dbObjectStore=dbTransaction.objectStore('logs');
+    	for(var i=0;i<logs.length;i++) {
+    		console.log("add log "+i);
+    		var request = dbObjectStore.add(logs[i]);
+    		request.onsuccess = function(e) {
+    			console.log(logs.length+" logs added to database");
+    		};
+    		request.onerror = function(e) {console.log("error adding log");};
+    	}
+    	toggleDialog('importDialog',false);
+    	alert("logs imported - restart");
+    });
+    fileReader.readAsText(file);
 });
 id('cancelImport').addEventListener('click',function() {
     console.log('cancel import');
