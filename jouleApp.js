@@ -391,83 +391,6 @@ id('backupButton').addEventListener('click',function() {toggleDialog('dataDialog
 id('importButton').addEventListener('click',function() {toggleDialog('importDialog',true)});
 id('dataCancelButton').addEventListener('click',function() {toggleDialog('dataDialog',false)});
 
-/* RESTORE BACKUP
-id("fileChooser").addEventListener('change', function() {
-	var file=id('fileChooser').files[0];
-	console.log("file: "+file+" name: "+file.name);
-	var fileReader=new FileReader();
-	fileReader.addEventListener('load', function(evt) {
-		console.log("file read: "+evt.target.result);
-	  	var data=evt.target.result;
-		var json=JSON.parse(data);
-		console.log("json: "+json);
-		var items=json.items;
-		console.log(items.length+" items loaded");
-		var dbTransaction=db.transaction('items',"readwrite");
-		var dbObjectStore=dbTransaction.objectStore('items');
-		for(var i=0;i<items.length;i++) {
-			console.log("save "+items[i].text);
-			var request=dbObjectStore.add(items[i]);
-			request.onsuccess=function(e) {
-				console.log(items.length+" items added to database");
-			};
-			request.onerror=function(e) {console.log("error adding item");};
-		}
-		showDialog('importDialog',false);
-		alert("backup imported - restart");
-  	});
-  	fileReader.readAsText(file);
-});
-
-// CANCEL RESTORE
-id('cancelImportButton').addEventListener('click', function() {
-    showDialog('importDialog',false);
-});
-
-// BACKUP
-function backup() {
-  	var fileName="lists";
-	var date=new Date();
-	fileName+=date.getFullYear();
-	fileName+=(date.getMonth()+1);
-	fileName+=date.getDate()+".json";
-	var dbTransaction=db.transaction('items',"readwrite");
-	var dbObjectStore=dbTransaction.objectStore('items');
-	console.log("database ready");
-	var request=dbObjectStore.openCursor();
-	var items=[];
-	dbTransaction=db.transaction('items',"readwrite");
-	console.log("indexedDB transaction ready");
-	dbObjectStore=dbTransaction.objectStore('items');
-	console.log("indexedDB objectStore ready");
-	request=dbObjectStore.openCursor();
-	request.onsuccess=function(event) {  
-		var cursor=event.target.result;  
-    		if(cursor) { // read in every item
-			    items.push(cursor.value);
-			    cursor.continue();  
-    		}
-		else {
-			console.log(items.length+" items - save");
-			var data={'items': items};
-			var json=JSON.stringify(data);
-			var blob=new Blob([json], {type:"data:application/json"});
-  			var a=document.createElement('a');
-			a.style.display='none';
-    		var url=window.URL.createObjectURL(blob);
-			console.log("data ready to save: "+blob.size+" bytes");
-   			a.href=url;
-   			a.download=fileName;
-    		document.body.appendChild(a);
-    		a.click();
-			alert(fileName+" saved to downloads folder");
-			var today=new Date();
-			lastSave=today.getMonth();
-			window.localStorage.setItem('lastSave',lastSave); // remember month of backup
-		}
-	}
-}
-*/
 // IMPORT FILE
 id("fileChooser").addEventListener('change',function() {
     var file=id('fileChooser').files[0];
@@ -502,12 +425,12 @@ id('confirmImport').addEventListener('click',function(event) {
     // alert("read file: "+file+" name: "+file.name);
     var fileReader=new FileReader();
     fileReader.onload=function() {
-    	alert('file read: '+fileReader.result);
-    	var data=evt.target.result;
+    	var data=fileReader.result;
+    	alert('file read: '+data);
     	var json=JSON.parse(data);
     	console.log("json: "+json);
     	var logs=json.logs;
-    	console.log(logs.length+" logs loaded");
+    	alert(logs.length+" logs loaded");
     	var dbTransaction=db.transaction('logs',"readwrite");
     	var dbObjectStore=dbTransaction.objectStore('logs');
     	for(var i=0;i<logs.length;i++) {
