@@ -546,12 +546,11 @@ request.onsuccess=function(event) {
     };
 };
 request.onupgradeneeded=function(event) {
-	let db = openRequest.result;
+	db=event.target.result;
 	if (!db.objectStoreNames.contains('logs')) { // if there's no "logs" store..
     	db.createObjectStore('logs', {keyPath: 'id',  autoIncrement: true}); // ..create it
     	alert('new logs object store created');
 	}
-	};
 	
 	// var dbObjectStore = event.currentTarget.result.createObjectStore("logs", { keyPath: "id", autoIncrement: true });
 	console.log("new logs ObjectStore created");
