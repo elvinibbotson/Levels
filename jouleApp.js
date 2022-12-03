@@ -430,7 +430,7 @@ id('confirmImport').addEventListener('click',function(event) {
     	var json=JSON.parse(data);
     	alert("json: "+json);
     	var logs=json.logs;
-    	// alert(logs.length+" logs loaded");
+    	alert(logs.length+" logs loaded");
     	var dbTransaction=db.transaction('logs',"readwrite");
     	var dbObjectStore=dbTransaction.objectStore('logs');
     	alert('database ready - save '+logs.length+' logs');
@@ -519,11 +519,11 @@ console.log('lastSave: '+lastSave);
 var request=window.indexedDB.open("jouleDB");
 request.onsuccess=function(event) {
     db=event.target.result;
-    console.log("DB open");
+    alert("DB open");
     var dbTransaction=db.transaction('logs',"readwrite");
     console.log("indexedDB transaction ready");
     var dbObjectStore=dbTransaction.objectStore('logs');
-    console.log("indexedDB objectStore ready");
+    alert("indexedDB objectStore ready");
     // code to read logs from database
     logs=[];
     console.log("logs array ready");
