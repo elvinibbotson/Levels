@@ -516,7 +516,7 @@ canvas=id('canvas').getContext('2d');
 overlay=id('overlay').getContext('2d');
 lastSave=window.localStorage.getItem('jouleSave'); // get month of last backup
 console.log('lastSave: '+lastSave);
-var request=window.indexedDB.open("jouleDB");
+var request=window.indexedDB.open("jouleDB",2);
 request.onsuccess=function(event) {
     db=event.target.result;
     alert("DB open");
@@ -546,7 +546,14 @@ request.onsuccess=function(event) {
     };
 };
 request.onupgradeneeded=function(event) {
-	var dbObjectStore = event.currentTarget.result.createObjectStore("logs", { keyPath: "id", autoIncrement: true });
+	let db = openRequest.result;
+	if (!db.objectStoreNames.contains('logs')) { // if there's no "logs" store..
+    	db.createObjectStore('logs', {keyPath: 'id',  autoIncrement: true}); // ..create it
+    	alert('new logs object store created');
+	}
+	};
+	
+	// var dbObjectStore = event.currentTarget.result.createObjectStore("logs", { keyPath: "id", autoIncrement: true });
 	console.log("new logs ObjectStore created");
 };
 request.onerror=function(event) {
