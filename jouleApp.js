@@ -519,13 +519,13 @@ console.log('lastSave: '+lastSave);
 var request=window.indexedDB.open("jouleDB");
 request.onsuccess=function(event) {
     db=event.target.result;
-    console.log("DB open");
+    alert("DB open");
     var dbTransaction=db.transaction('logs',"readwrite");
     alert("transaction ready");
     var dbObjectStore=dbTransaction.objectStore('logs');
     // code to read logs from database
     logs=[];
-    console.log("logs array ready");
+    alert("logs array ready");
     var request=dbObjectStore.openCursor();
     request.onsuccess = function(event) {  
 	    var cursor=event.target.result;  
