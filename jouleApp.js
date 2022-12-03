@@ -394,35 +394,9 @@ id('dataCancelButton').addEventListener('click',function() {toggleDialog('dataDi
 // IMPORT FILE
 id("fileChooser").addEventListener('change',function() {
     var file=id('fileChooser').files[0];
-    // alert("file: "+file+" name: "+file.name);
-    /*
-    var fileReader=new FileReader();
-    fileReader.addEventListener('load', function(evt) {
-	    console.log("file read: "+evt.target.result);
-    	var data=evt.target.result;
-    	var json=JSON.parse(data);
-    	console.log("json: "+json);
-    	var logs=json.logs;
-    	console.log(logs.length+" logs loaded");
-    	var dbTransaction=db.transaction('logs',"readwrite");
-    	var dbObjectStore=dbTransaction.objectStore('logs');
-    	for(var i=0;i<logs.length;i++) {
-    		console.log("add log "+i);
-    		var request = dbObjectStore.add(logs[i]);
-    		request.onsuccess = function(e) {
-    			console.log(logs.length+" logs added to database");
-    		};
-    		request.onerror = function(e) {console.log("error adding log");};
-    	}
-    	toggleDialog('importDialog',false);
-    	alert("logs imported - restart");
-    });
-    fileReader.readAsText(file);
-    */
 });
 id('confirmImport').addEventListener('click',function(event) {
 	var file=id('fileChooser').files[0];
-    // alert("read file: "+file+" name: "+file.name);
     var fileReader=new FileReader();
     fileReader.onload=function() {
     	var data=fileReader.result;
@@ -430,9 +404,9 @@ id('confirmImport').addEventListener('click',function(event) {
     	var json=JSON.parse(data);
     	console.log("json: "+json);
     	var logs=json.logs;
-    	alert(logs.length+" logs loaded");
+    	console.log(logs.length+" logs loaded");
     	var dbTransaction=db.transaction('logs',"readwrite");
-    	alert('database ready - save '+logs.length+' logs');
+    	console.log('database ready - save '+logs.length+' logs');
     	var dbObjectStore=dbTransaction.objectStore('logs');
     	for(var i=0;i<logs.length;i++) {
     		console.log("add log "+i);
@@ -519,13 +493,9 @@ console.log('lastSave: '+lastSave);
 var request=window.indexedDB.open("jouleDB",2);
 request.onsuccess=function(event) {
     db=event.target.result;
-    alert("DB open");
     var dbTransaction=db.transaction('logs',"readwrite");
-    alert("transaction ready");
     var dbObjectStore=dbTransaction.objectStore('logs');
-    // code to read logs from database
     logs=[];
-    alert("logs array ready");
     var request=dbObjectStore.openCursor();
     request.onsuccess = function(event) {  
 	    var cursor=event.target.result;  
@@ -551,8 +521,6 @@ request.onupgradeneeded=function(event) {
     	db.createObjectStore('logs', {keyPath: 'id',  autoIncrement: true}); // ..create it
     	alert('new logs object store created');
 	}
-	
-	// var dbObjectStore = event.currentTarget.result.createObjectStore("logs", { keyPath: "id", autoIncrement: true });
 	console.log("new logs ObjectStore created");
 };
 request.onerror=function(event) {
