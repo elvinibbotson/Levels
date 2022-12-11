@@ -4,7 +4,7 @@ function id(el) {
 }
 
 function pad(n) {
-	console.log('pad '+n+' to 5 chars - starting from '+n.length);
+	// console.log('pad '+n+' to 5 chars - starting from '+n.length);
 	var num=n;
 	var a=5-num.length;
 	for(var i=0;i<a;i++) num='&nbsp;'+num;
@@ -21,6 +21,7 @@ var log=null;
 var logIndex=null;
 var currentLog=null;
 var view='list';
+var currentDialog=null;
 var dragStart={};
 var canvas=null;
 var overlay=null;
@@ -33,35 +34,38 @@ var months="JanFebMarAprMayJunJulAugSepOctNovDec";
 // EVENT LISTENERS
 
 // DRAG TO GO BACK
-document.body.addEventListener('touchstart', function(event) {
+id('main').addEventListener('touchstart', function(event) {
     console.log(event.changedTouches.length+" touches");
     dragStart.x=event.changedTouches[0].clientX;
     dragStart.y=event.changedTouches[0].clientY;
     console.log('start drag at '+dragStart.x+','+dragStart.y+' view is '+view);
 })
-
-document.body.addEventListener('touchmove', function(event) {
+/*
+id('main').addEventListener('touchmove', function(event) {
 	var x=event.changedTouches[0].clientX-dragStart.x;
 	x+=canvasL;
 	id('graphPanel').style.left=x+'px';
 })
-
-document.body.addEventListener('touchend', function(event) {
+*/
+id('main').addEventListener('touchend', function(event) {
     var drag={};
     drag.x=dragStart.x-event.changedTouches[0].clientX;
     drag.y=dragStart.y-event.changedTouches[0].clientY;
     console.log('drag '+drag.x+','+drag.y+' view is '+view);
     if(view=='list') {
-    	if(Math.abs(drag.y)>50) return; // ignore vertical drags
-    	if(Math.abs(drag.x)>50) {
+    	if(Math.abs(drag.y)>50) return; // ignore vertical drag
+    	if(drag.x<-50) { // drag right to show graph
+    		console.log('drag.x is '+drag.x);
     		// alert("show graph view");
     		view='graph';
     		id('listPanel').style.display='none';
     		id('heading').style.display='none';
+    		id('buttonNew').style.display='none';
     		drawGraph();
     	}
+    	else if((drag.x>50)&&(currentDialog)) toggleDialog(currentDialog,false); // drag left to close dialog
     }
-    else {
+    else { // drag vertically to return to list view
     	canvasL-=drag.x;
     	if(Math.abs(drag.x)>50) return; // ignore horizontal drags
     	if(Math.abs(drag.y)>50) {
@@ -71,6 +75,7 @@ document.body.addEventListener('touchend', function(event) {
     		id('graphOverlay').style.display='none';
     		id('listPanel').style.display='block';
     		id('heading').style.display='block';
+    		id('buttonNew').style.display='block';
     		// populateList();
     	}
     }
@@ -129,11 +134,11 @@ id('buttonSaveLog').addEventListener('click', function() {
 	}
 });
 
-// CANCEL NEW/EDIT LOG
+/* CANCEL NEW/EDIT LOG
 id('buttonCancelLog').addEventListener('click', function() {
     toggleDialog('logDialog',false); // close add new jotting dialog
 });
-  
+*/
 // DELETE LOG
 id('buttonDeleteLog').addEventListener('click', function() {
 	var text=log.text; // initiate delete log
@@ -159,14 +164,20 @@ id('buttonDeleteConfirm').addEventListener('click', function() {
 	toggleDialog('deleteDialog', false);
 });
 
-// CANCEL DELETE
+/* CANCEL DELETE
 id('buttonCancelDelete').addEventListener('click', function() {
     toggleDialog('deleteDialog', false); // close delete dialog
 });
-
+*/
 // SHOW/HIDE DIALOGS
 function  toggleDialog(d, visible) {
     console.log('toggle '+d+' - '+visible);
+    if(currentDialog) id(currentDialog).style.display='none';
+    if(visible) {
+    	currentDialog=d;
+    	id(d).style.display='block';
+    }
+    /*
   	id('buttonNew').style.display=(visible)?'none':'block';
 	if(d=='logDialog') { // toggle log dialog
 	    if (visible) {
@@ -196,6 +207,7 @@ function  toggleDialog(d, visible) {
       		id('dataDialog').style.display='none';
     	}
 	}
+	*/
 }
 
 // OPEN SELECTED LOG FOR EDITING
@@ -246,7 +258,7 @@ function populateList() {
 				mon=parseInt(d.substr(5,2))-1;
 				mon*=3;
 				d=months.substr(mon,3)+" "+d.substr(2,2);
-				html=d+' <span class="blue">'+pad(logs[i].grid)+'</span><span class="green">'+pad(logs[i].pv)+'</span><span class="plum">'+pad(logs[i].yield)+'</span><span class="orange">'+pad(logs[i].cons)+'</span><span class="yellow">'+pad(logs[i].solar)+'</span>';
+				html='<span class="grey">'+d+'</span><span class="blue">'+pad(logs[i].grid)+'</span><span class="green">'+pad(logs[i].pv)+'</span><span class="plum">'+pad(logs[i].yield)+'</span><span class="orange">'+pad(logs[i].cons)+'</span><span class="yellow">'+pad(logs[i].solar)+'</span>';
 				itemText.innerHTML=html;
 				listItem.appendChild(itemText);
 		  		id('list').appendChild(listItem);
@@ -272,7 +284,7 @@ function drawGraph() {
 	id("graphPanel").style.width=n*monthW+'px';
 	id("canvas").width=n*monthW;
 	canvasL=(14-n)*monthW;
-	console.log('screen width: '+scr.w+'; '+logs.length+'logs; canvasL is '+canvasL+'; width is '+id('canvas').width);
+	// console.log('screen width: '+scr.w+'; '+logs.length+'logs; canvasL is '+canvasL+'; width is '+id('canvas').width);
 	id('graphPanel').style.left=canvasL+'px';
 	id('graphPanel').style.display='block';
 	id('graphOverlay').style.display='block';
@@ -287,7 +299,7 @@ function drawGraph() {
 		var y=id('canvas').height-margin-val*kWh;
 		if(i<2) canvas.moveTo(x,y);
 		else canvas.lineTo(x,y);
-		console.log('blue '+i+' at '+x+','+y);
+		// console.log('blue '+i+' at '+x+','+y);
 	}
     canvas.stroke();
     // next draw PV yield
@@ -299,7 +311,7 @@ function drawGraph() {
 		y=id('canvas').height-margin-val*kWh;
 		if(i<2) canvas.moveTo(x,y);
 		else canvas.lineTo(x,y);
-		console.log('green '+i+' at '+x+','+y);
+		// console.log('green '+i+' at '+x+','+y);
 	}
 	canvas.stroke();
 	// heat pump yield...
@@ -311,7 +323,7 @@ function drawGraph() {
 		y=id('canvas').height-margin-val*kWh;
 		if(i<2) canvas.moveTo(x,y);
 		else canvas.lineTo(x,y);
-		console.log('plum '+i+' at '+x+','+y);
+		// console.log('plum '+i+' at '+x+','+y);
 	}
 	canvas.stroke();
 	// heat pump unput
@@ -323,7 +335,7 @@ function drawGraph() {
 		y=id('canvas').height-margin-val*kWh;
 		if(i<2) canvas.moveTo(x,y);
 		else canvas.lineTo(x,y);
-		console.log('orange '+i+' at '+x+','+y);
+		// console.log('orange '+i+' at '+x+','+y);
 	}
 	canvas.stroke();
 	// thermal solar yield
@@ -335,38 +347,41 @@ function drawGraph() {
 		y=id('canvas').height-margin-val*kWh;
 		if(i<2) canvas.moveTo(x,y);
 		else canvas.lineTo(x,y);
-		console.log('yellow '+i+' at '+x+','+y);
+		// console.log('yellow '+i+' at '+x+','+y);
 	}
 	canvas.stroke();
 	// then draw kWh and months along axes
+	var h=scr.h-50;
 	overlay.font='20px Monospace';
 	overlay.fillStyle='skyblue';
-	overlay.fillText('grid',25,20);
+	overlay.fillText('grid',25,h);
 	overlay.fillStyle='lightgreen';
-	overlay.fillText('PV',100,20);
+	overlay.fillText('PV',100,h);
 	overlay.fillStyle='plum';
-	overlay.fillText('yield',150,20);
+	overlay.fillText('yield',150,h);
 	overlay.fillStyle='orange';
-	overlay.fillText('input',225,20);
+	overlay.fillText('input',225,h);
 	overlay.fillStyle='yellow';
-	overlay.fillText('solar',300,20);
+	overlay.fillText('solar',300,h);
 	overlay.fillStyle='white';
 	overlay.lineWidth=1;
-	y=(scr.h-margin)/15; // 100kWh intervals - px
+	y=(scr.h-margin)/15; // draw horizontal gridlines at 100kWh intervals - px
 	for(i=0;i<13;i++) overlay.fillText(i*100,0,scr.h-margin-i*100*kWh); // kWh
-	// for(i=0;i<15;i++) overlay.fillText(i*100,-1*canvasL,scr.h-margin-i*100*kWh); // 0-1500 (kWh)
 	overlay.strokeStyle='silver';
 	overlay.beginPath();
 	for(i=0;i<15;i++) {
 		overlay.moveTo(0,scr.h-margin-i*100*kWh);
 		overlay.lineTo(scr.w,scr.h-margin-i*100*kWh); // grey lines
-		// canvas.lineTo(id('canvas').width,scr.h-margin-i*100*kWh); // grey lines
 	}
 	overlay.stroke();
-	canvas.font='20px Monospace';
-	canvas.fillStyle='white';
+	canvas.font='20px Monospace'; // now draw vertical gridlines and month labels
+	canvas.fillStyle='white'; // white text
+	canvas.strokeStyle='silver'; // grey lines
+	canvas.beginPath();
 	for(var i=1;i<logs.length;i++) {
 		x=(i-1)*monthW;
+		canvas.moveTo(x,scr.h-margin);
+		canvas.lineTo(x,0);
 		var m=parseInt(logs[i].date.substr(5,2))-1;
 		canvas.fillText(letters.substr(m,1),x,scr.h-margin+40); // month letter
 		if(m<1) {
@@ -374,6 +389,7 @@ function drawGraph() {
 			canvas.fillText(year,x,scr.h-margin+20); // YYYY
 		}
 	}
+	canvas.stroke();
 }
 
 function selectLog() {
@@ -389,7 +405,7 @@ function selectLog() {
 // DATA
 id('backupButton').addEventListener('click',function() {toggleDialog('dataDialog',false); backup();});
 id('importButton').addEventListener('click',function() {toggleDialog('importDialog',true)});
-id('dataCancelButton').addEventListener('click',function() {toggleDialog('dataDialog',false)});
+/* id('dataCancelButton').addEventListener('click',function() {toggleDialog('dataDialog',false)}); */
 
 // IMPORT FILE
 id("fileChooser").addEventListener('change',function() {

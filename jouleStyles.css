@@ -21,6 +21,169 @@ input {
 	border: none;
 }
 
+.text-button {
+	border: 2px solid white;
+	border-radius: 10px;
+	margin: 15px;
+	padding: 5px;
+	font-size:1.2em;
+	font-weight: bold;
+	color: white;
+	background-color:gray;
+	float: right;
+}
+
+.round-button {
+	display: block;
+	position: fixed;
+	right: 20px;
+	bottom: 20px;
+	width: 50px;
+	height: 50px;
+	border: 2px solid white;
+	border-radius: 10px;
+	background: gray;
+	z-index: 50;
+}
+
+.round-button img {
+	display: block;
+	width: 24px;
+	height: 24px;
+	padding: 13px;
+}
+
+.logList {
+    margin: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    transition: opacity 0.2s ease-in-out;
+    padding: 0 0.5em;
+}
+.log-item {
+	height:24px;
+	display: block;
+	font-family: Monospace;
+	font-weight: bold;
+	font-size: 1.5em;
+}
+/*
+.lo-item.selected {
+	background-color: black;
+}
+
+.menu-button {
+	width: 24px;
+    height: 24px;
+	padding: 8px !important;
+	border: none;
+	float: right;
+	background: url(menuButton24px.svg) center center no-repeat;
+}
+*/
+.dialog {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  background: dimgray;
+  display: none;
+  z-index: 100;
+}
+.dialog > div {
+  padding-top: 24px;
+  padding-left: 24px;
+  padding-right: 24px;
+}
+.right {
+	float: right;
+	right: 5px;
+}
+.grey {
+	color: silver;
+	display: block;
+	position: absolute;
+	float: left;
+	margin-left:2%;
+}
+.blue {
+	color: skyblue;
+	display: block;
+	position: absolute;
+	float: left;
+	margin-left:20%;
+}
+.green {
+	color: lightgreen;
+	display: block;
+	position: absolute;
+	float: left;
+	margin-left:36%;
+}
+.plum {
+	color: plum;
+	display: block;
+	position: absolute;
+	float: left;
+	margin-left:52%;
+}
+.orange {
+	color: orange;
+	display: block;
+	position: absolute;
+	float: left;
+	margin-left:68%;
+}
+.yellow {
+	color: yellow;
+	display: block;
+	position: absolute;
+	float: left;
+	margin-left:84%;
+}
+.dialog-title {
+  padding-top: 20px;
+  font-size: 1em;
+  font-weight: bold;
+}
+.dialog-body {
+  padding-top: 5px;
+  padding-bottom: 5px; }
+  
+.dialog-body select {
+    width: 30%;
+	height: 32px;
+	font-size: 1em;
+	color: white;
+	background-color: black;
+}
+.save-button {
+    width: 50px;
+    height: 50px;
+    border: none;
+    float: right;
+	background-color: dimgray;
+    background: url(okButton24px.svg) center center no-repeat;
+}
+/*
+.cancel-button {
+    width: 50px;
+    height: 24px;
+    border: none;
+	background-color: dimgray;
+    background: url(cancelButton24px.svg) center center no-repeat;
+}
+*/
+.delete-button {
+    width: 50px;
+    height: 50px;
+    border: none;
+    float: left;
+	background-color: dimgray;
+	background: url(deleteButton24px.svg) center center no-repeat;
+}
+
 #fileChooser {
 	margin: 20px;
 	font-size: 1.5em;
@@ -37,7 +200,7 @@ input {
 	position: fixed;
 	top: 0;
 	left: 0;
-	height: 34px;
+	height: 30px;
 	width: 100%;
 	font-size: 1.5em;
 	font-family: Monospace;
@@ -51,7 +214,7 @@ input {
 #listPanel {
   width: 100%;
   height: 100%;
-  top: 36px;
+  top: 32px;
   -webkit-box-flex: 1;
   -webkit-flex: 1;
       -ms-flex: 1;
@@ -88,150 +251,14 @@ input {
 	display: none;
 	z-index: 10;
 }
-
-.text-button {
-	border: 2px solid white;
-	border-radius: 10px;
-	margin: 15px;
-	padding: 5px;
-	font-size:1.2em;
-	font-weight: bold;
-	color: white;
-	background-color:gray;
-	float: right;
-}
-
-.round-button {
-	display: block;
-	position: fixed;
-	right: 20px;
-	bottom: 20px;
-	width: 50px;
-	height: 50px;
-	border: 2px solid white;
-	border-radius: 10px;
-	background: gray;
-	z-index: 50;
-}
-
-.round-button img {
-	display: block;
-	width: 24px;
-	height: 24px;
-	padding: 13px;
-}
-
+/*
 #buttonView {
 	left: 20px;
 	bottom: 20px;
 }
-
+*/
 #buttonNew {
 	right: 20px;
 	bottom: 20px;
 }
 
-.logList {
-    margin: 0;
-    list-style: none;
-    display: flex;
-    flex-direction: column;
-    transition: opacity 0.2s ease-in-out;
-    padding: 0 0.5em;
-}
-.log-item {
-	margin-bottom: 10px;
-	display: block;
-	font-family: Monospace;
-	font-weight: bold;
-	font-size: 1.5em;
-	color: white;
-}
-.lo-item.selected {
-	background-color: black;
-}
-.menu-button {
-	width: 24px;
-    height: 24px;
-	padding: 8px !important;
-	border: none;
-	float: right;
-	background: url(menuButton24px.svg) center center no-repeat;
-}
-.dialog {
-  position: fixed;
-  left: 0;
-  top: 0;
-  width: 100%;
-  background: dimgray;
-  display: none;
-  z-index: 100;
-}
-.dialog > div {
-  padding-top: 24px;
-  padding-left: 24px;
-  padding-right: 24px;
-}
-.right {
-	float: right;
-	right: 5px;
-}
-.blue {
-	color: skyblue;
-}
-.green {
-	color: lightgreen;
-}
-.plum {
-	color: plum;
-}
-.orange {
-	color: orange;
-}
-.yellow {
-	color: yellow;
-}
-
-.dialog-title {
-  padding-top: 20px;
-  font-size: 1em;
-  font-weight: bold;
-}
-.dialog-body {
-  padding-top: 5px;
-  padding-bottom: 5px; }
-  
-.dialog-body select {
-    width: 30%;
-	height: 32px;
-	font-size: 1em;
-	color: white;
-	background-color: black;
-}
-.dialog-buttons {
-  padding: 8px !important;
-  float: right;
-}
-.save-button {
-    width: 50px;
-    height: 24px;
-    border: none;
-    float: right;
-	background-color: dimgray;
-    background: url(okButton24px.svg) center center no-repeat;
-}
-.cancel-button {
-    width: 50px;
-    height: 24px;
-    border: none;
-	background-color: dimgray;
-    background: url(cancelButton24px.svg) center center no-repeat;
-}
-.delete-button {
-    width: 50px;
-    height: 24px;
-    border: none;
-    float: left;
-	background-color: dimgray;
-	background: url(deleteButton24px.svg) center center no-repeat;
-}
