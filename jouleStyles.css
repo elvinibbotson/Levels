@@ -1,4 +1,7 @@
 html, body {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
   padding: 0;
   margin: 0;
   height: 100%;
@@ -10,7 +13,9 @@ html, body {
   background-color: dimgray;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-	overflow: hidden;
+}
+html {
+  overflow: hidden;
 }
 
 input {
@@ -68,20 +73,6 @@ input {
 	font-weight: bold;
 	font-size: 1.5em;
 }
-/*
-.lo-item.selected {
-	background-color: black;
-}
-
-.menu-button {
-	width: 24px;
-    height: 24px;
-	padding: 8px !important;
-	border: none;
-	float: right;
-	background: url(menuButton24px.svg) center center no-repeat;
-}
-*/
 .dialog {
   position: fixed;
   left: 0;
@@ -166,15 +157,7 @@ input {
 	background-color: dimgray;
     background: url(okButton24px.svg) center center no-repeat;
 }
-/*
-.cancel-button {
-    width: 50px;
-    height: 24px;
-    border: none;
-	background-color: dimgray;
-    background: url(cancelButton24px.svg) center center no-repeat;
-}
-*/
+
 .delete-button {
     width: 50px;
     height: 50px;
@@ -209,6 +192,12 @@ input {
 	color: white;
 	background-color: black;
 	display='block';
+}
+
+#main {
+	width: 100%;
+	top: 30px;
+	/* height: 100%;*/
 }
 
 #listPanel {
@@ -251,12 +240,7 @@ input {
 	display: none;
 	z-index: 10;
 }
-/*
-#buttonView {
-	left: 20px;
-	bottom: 20px;
-}
-*/
+
 #buttonNew {
 	right: 20px;
 	bottom: 20px;

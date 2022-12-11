@@ -20,7 +20,7 @@ var logs=[];
 var log=null;
 var logIndex=null;
 var currentLog=null;
-var view='list';
+var view='listView';
 var currentDialog=null;
 var dragStart={};
 var canvas=null;
@@ -40,23 +40,22 @@ id('main').addEventListener('touchstart', function(event) {
     dragStart.y=event.changedTouches[0].clientY;
     console.log('start drag at '+dragStart.x+','+dragStart.y+' view is '+view);
 })
-/*
+
 id('main').addEventListener('touchmove', function(event) {
 	var x=event.changedTouches[0].clientX-dragStart.x;
 	x+=canvasL;
 	id('graphPanel').style.left=x+'px';
 })
-*/
+
 id('main').addEventListener('touchend', function(event) {
     var drag={};
     drag.x=dragStart.x-event.changedTouches[0].clientX;
     drag.y=dragStart.y-event.changedTouches[0].clientY;
     console.log('drag '+drag.x+','+drag.y+' view is '+view);
-    if(view=='list') {
+    if(view=='listView') {
     	if(Math.abs(drag.y)>50) return; // ignore vertical drag
     	if(drag.x<-50) { // drag right to show graph
     		console.log('drag.x is '+drag.x);
-    		// alert("show graph view");
     		view='graph';
     		id('listPanel').style.display='none';
     		id('heading').style.display='none';
@@ -69,8 +68,7 @@ id('main').addEventListener('touchend', function(event) {
     	canvasL-=drag.x;
     	if(Math.abs(drag.x)>50) return; // ignore horizontal drags
     	if(Math.abs(drag.y)>50) {
-    		// alert("show list view");
-    		view='list';
+    		view='listView';
     		id('graphPanel').style.display='none';
     		id('graphOverlay').style.display='none';
     		id('listPanel').style.display='block';
