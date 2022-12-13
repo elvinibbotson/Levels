@@ -26,8 +26,8 @@ var dragStart={};
 var canvas=null;
 var overlay=null;
 var canvasL=0;
-var monthW=0;
-var kWh=0;
+var intervalX=0;
+var intervalY=0;
 var lastSave=-1;
 var months="JanFebMarAprMayJunJulAugSepOctNovDec";
 
@@ -66,6 +66,7 @@ id('main').addEventListener('touchend', function(event) {
     }
     else { // drag vertically to return to list view
     	canvasL-=drag.x;
+    	console.log('canvas left: '+canvasL);
     	if(Math.abs(drag.x)>50) return; // ignore horizontal drags
     	if(Math.abs(drag.y)>50) {
     		view='listView';
@@ -256,7 +257,7 @@ function populateList() {
 				mon=parseInt(d.substr(5,2))-1;
 				mon*=3;
 				d=months.substr(mon,3)+" "+d.substr(2,2);
-				html='<span class="grey">'+d+'</span><span class="blue">'+pad(logs[i].grid)+'</span><span class="green">'+pad(logs[i].pv)+'</span><span class="plum">'+pad(logs[i].yield)+'</span><span class="orange">'+pad(logs[i].cons)+'</span><span class="yellow">'+pad(logs[i].solar)+'</span>';
+				html='<span class="grey">'+d+'</span><span class="red">'+pad(logs[i].grid)+'</span><span class="green">'+pad(logs[i].pv)+'</span><span class="blue">'+pad(logs[i].yield)+'</span><span class="orange">'+pad(logs[i].cons)+'</span><span class="yellow">'+pad(logs[i].solar)+'</span>';
 				itemText.innerHTML=html;
 				listItem.appendChild(itemText);
 		  		id('list').appendChild(listItem);
@@ -271,30 +272,105 @@ function populateList() {
 }
 
 // DRAW GRAPH
-function drawGraph() {
-	console.log('GRAPH');
-	var letters='JFMAMJJASOND';
-	// start from second month, logging kWh between month ends
-	var firstMonth=parseInt(logs[1].date.substr(2,2)*12)+parseInt(logs[1].date.substr(5,2))-1;
-	var lastMonth=parseInt(logs[logs.length-1].date.substr(2,2))*12+parseInt(logs[logs.length-1].date.substr(5,2))-1;
-	var n=lastMonth-firstMonth;
-	console.log('graph spans months '+firstMonth+'-'+lastMonth);
-	id("graphPanel").style.width=n*monthW+'px';
-	id("canvas").width=n*monthW;
-	canvasL=(14-n)*monthW;
-	// console.log('screen width: '+scr.w+'; '+logs.length+'logs; canvasL is '+canvasL+'; width is '+id('canvas').width);
+function drawGraph(interval) {
+	if(interval==null) interval='month'; // interval can be month (default), quarter or year
+	console.log('GRAPH - interval is '+interval);
+	var letters='';
+	if(interval=='month') letters='JFMAMJJASOND';
+	else if(interval=='quarters') letters='WSSA';
+	var start=null;
+	var finish=null;
+	var n=0;
+	var margin=60; // bottom margin to allow space for Android controls
+	var intervalV=0; // kWh interval for horizontal gridlines
+	if(interval=='month') {
+		start=parseInt(logs[1].date.substr(2,2))*12+parseInt(logs[1].date.substr(5,2))-1; // start month
+		finish=parseInt(logs[logs.length-1].date.substr(2,2))*12+parseInt(logs[logs.length-1].date.substr(5,2))-1; // end month
+		n=finish-start;
+		intervalV=100; // grid lines at 100kWh intervals
+	}
+	else if(interval=='quarter') {
+		// SET QUARTERLY START AND FINISH
+		intervalV=250; // grid lines at 250kWh intervals
+	}
+	else {
+		// SET YEARLY START & FINISH
+		intervalV=1000; // grid lines at 1000kWh intervals
+	}
+	console.log('graph spans '+n+' intervals '+start+'-'+finish);
+	canvasL=(14-n)*intervalX;
 	id('graphPanel').style.left=canvasL+'px';
+	id("graphPanel").style.width=(n*intervalX+10)+'px';
+	id('canvas').width=n*intervalX+10;
+	console.log('canvas width: '+id('canvas').width+'; left: '+canvasL);
 	id('graphPanel').style.display='block';
 	id('graphOverlay').style.display='block';
-	var margin=120; // bottom margin
+	// draw interval tabs
+	overlay.fillStyle='black';
+	overlay.fillRect(0,0,scr.w,75); // black background
+	overlay.fillStyle='#333'; // draw 3 dark (background) tabs
+	overlay.fillRect(5,50,scr.w/3-10,25);
+	overlay.fillRect(scr.w/3+5,50,scr.w/3-10,25);
+	overlay.fillRect(2*scr.w/3+5,50,scr.w/3-10,25);
+	overlay.fillStyle='dimgray'; // draw gray foreground tab for current interval
+	console.log('interval: '+interval);
+	if(interval=='month') overlay.fillRect(5,50,scr.w/3-10,25);
+	else if(interval=='quarter') overlay.fillRect(scr.w/3+5,50,scr.w/3-10,25);
+	else overlay.fillRect(2*scr.w/3+5,50,scr.w/3-10,25);
+	overlay.fillStyle='white'; // label tabs
+	overlay.font='20px Monospace';
+	overlay.fillText('month',20,68);
+	overlay.fillText('quarter',scr.w/3+20,68);
+	overlay.fillText('year',2*scr.w/3+20,68);
+	// draw horizontal gridlines and kWh labels on overlay
+	// overlay.fillStyle='white'; // white text
+	// overlay.font='20px Monospace';
+	for(i=0;i<12;i++) overlay.fillText(i*intervalV,2,scr.h-margin-i*intervalY-5); // kWh at 100px intervals
+	overlay.fillText('kWh',2,scr.h-margin-12*intervalY+25); // vertical axis label
+	overlay.strokeStyle='silver'; // grey lines
+	overlay.beginPath();
+	for(i=0;i<13;i++) {
+		overlay.moveTo(0,scr.h-margin-i*intervalY);
+		overlay.lineTo(scr.w,scr.h-margin-i*intervalY); // grey lines
+	}
+	overlay.stroke();
+	// draw vertical gridlines and interval labels on canvas
+	canvas.strokeStyle='silver'; // grey lines
+	canvas.font='20px Monospace';
+	canvas.fillStyle='white'; // white text
+	canvas.beginPath();
+	console.log('draw '+logs.length+' vertical gridlines');
+	for(var i=1;i<logs.length;i++) { // DIVIDE logs.length BY 3 FOR QUARTERLY AND BY 12 FOR YEARLY INTERVALS
+		x=(i-1)*intervalX;
+		if(x%10==0) console.log('draw line '+i+' from '+x+', '+(scr.h-margin)+'to '+x+','+(scr.h-margin-12*intervalY));
+		canvas.moveTo(x,scr.h-margin);
+		canvas.lineTo(x,scr.h-margin-12*intervalY);
+		if(interval=='month') {
+			var m=parseInt(logs[i].date.substr(5,2))-1;
+			canvas.fillText(letters.charAt(m),x-5,scr.h-margin-12*intervalY-5); // month letter just above and below grid
+			canvas.fillText(letters.charAt(m),x-5,scr.h-margin+20);
+			if(m<1) {
+				var year=logs[i].date.substr(0,4);
+				canvas.fillText(year,x,scr.h-margin-12*intervalY-24); // YYYY above month labels
+			}
+		}
+		else if(interval=='quarter') {
+			// LABELS FOR QUARTERS AND YEARS
+		}
+		else {
+			// LABELS FOR YEARS - YY
+		}
+	}
+	canvas.stroke();
 	// first draw grid power usage
-	canvas.strokeStyle='skyblue';
+	canvas.strokeStyle='hotpink';
 	canvas.lineWidth=3;
 	canvas.beginPath();
 	for(var i=1;i<logs.length;i++) {
-		var val=logs[i].grid-logs[i-1].grid; // kWh for month
-		var x=(i-1)*monthW;
-		var y=id('canvas').height-margin-val*kWh;
+		var val=logs[i].grid-logs[i-1].grid; // kWh
+		val*=intervalY/intervalV; // convert kWh to pixels
+		var x=(i-1)*intervalX;
+		var y=scr.h-margin-val;
 		if(i<2) canvas.moveTo(x,y);
 		else canvas.lineTo(x,y);
 		// console.log('blue '+i+' at '+x+','+y);
@@ -304,36 +380,36 @@ function drawGraph() {
     canvas.strokeStyle='lightgreen';
     canvas.beginPath();
 	for(var i=1;i<logs.length;i++) { 
-		val=logs[i].pv-logs[i-1].pv; // kWh for month
-		x=(i-1)*monthW;
-		y=id('canvas').height-margin-val*kWh;
+		val=logs[i].pv-logs[i-1].pv; // kWh
+		val*=intervalY/intervalV; // convert kWh to pixels
+		x=(i-1)*intervalX;
+		y=scr.h-margin-val;
 		if(i<2) canvas.moveTo(x,y);
 		else canvas.lineTo(x,y);
-		// console.log('green '+i+' at '+x+','+y);
 	}
 	canvas.stroke();
 	// heat pump yield...
-	canvas.strokeStyle='plum';
+	canvas.strokeStyle='skyblue';
     canvas.beginPath();
 	for(var i=1;i<logs.length;i++) { 
-		val=logs[i].yield-logs[i-1].yield; // kWh for month
-		x=(i-1)*monthW;
-		y=id('canvas').height-margin-val*kWh;
+		val=logs[i].yield-logs[i-1].yield; // kWh
+		val*=intervalY/intervalV; // convert kWh to pixels
+		x=(i-1)*intervalX;
+		y=id('canvas').height-margin-val;
 		if(i<2) canvas.moveTo(x,y);
 		else canvas.lineTo(x,y);
-		// console.log('plum '+i+' at '+x+','+y);
 	}
 	canvas.stroke();
-	// heat pump unput
+	// heat pump input
 	canvas.strokeStyle='orange';
     canvas.beginPath();
 	for(var i=1;i<logs.length;i++) { 
-		val=logs[i].cons-logs[i-1].cons; // kWh for month
-		x=(i-1)*monthW;
-		y=id('canvas').height-margin-val*kWh;
+		val=logs[i].cons-logs[i-1].cons; // kWh
+		val*=intervalY/intervalV; // convert kWh to pixels
+		x=(i-1)*intervalX;
+		y=id('canvas').height-margin-val;
 		if(i<2) canvas.moveTo(x,y);
 		else canvas.lineTo(x,y);
-		// console.log('orange '+i+' at '+x+','+y);
 	}
 	canvas.stroke();
 	// thermal solar yield
@@ -341,21 +417,21 @@ function drawGraph() {
     canvas.beginPath();
 	for(var i=1;i<logs.length;i++) { 
 		val=logs[i].solar-logs[i-1].solar; // kWh for month
-		x=(i-1)*monthW;
-		y=id('canvas').height-margin-val*kWh;
+		val*=intervalY/intervalV; // convert kWh to pixels
+		x=(i-1)*intervalX;
+		y=id('canvas').height-margin-val;
 		if(i<2) canvas.moveTo(x,y);
 		else canvas.lineTo(x,y);
-		// console.log('yellow '+i+' at '+x+','+y);
 	}
 	canvas.stroke();
-	// then draw kWh and months along axes
-	var h=scr.h-50;
+	// then draw legend
+	var h=24;
 	overlay.font='20px Monospace';
-	overlay.fillStyle='skyblue';
+	overlay.fillStyle='hotpink';
 	overlay.fillText('grid',25,h);
 	overlay.fillStyle='lightgreen';
 	overlay.fillText('PV',100,h);
-	overlay.fillStyle='plum';
+	overlay.fillStyle='lightblue';
 	overlay.fillText('yield',150,h);
 	overlay.fillStyle='orange';
 	overlay.fillText('input',225,h);
@@ -363,6 +439,7 @@ function drawGraph() {
 	overlay.fillText('solar',300,h);
 	overlay.fillStyle='white';
 	overlay.lineWidth=1;
+	/* 
 	y=(scr.h-margin)/15; // draw horizontal gridlines at 100kWh intervals - px
 	for(i=0;i<13;i++) overlay.fillText(i*100,0,scr.h-margin-i*100*kWh); // kWh
 	overlay.strokeStyle='silver';
@@ -377,7 +454,7 @@ function drawGraph() {
 	canvas.strokeStyle='silver'; // grey lines
 	canvas.beginPath();
 	for(var i=1;i<logs.length;i++) {
-		x=(i-1)*monthW;
+		x=(i-1)*intervalW;
 		canvas.moveTo(x,scr.h-margin);
 		canvas.lineTo(x,0);
 		var m=parseInt(logs[i].date.substr(5,2))-1;
@@ -388,6 +465,7 @@ function drawGraph() {
 		}
 	}
 	canvas.stroke();
+	*/
 }
 
 function selectLog() {
@@ -492,9 +570,9 @@ function backup() {
 scr.w=screen.width;
 scr.h=screen.height;
 console.log('screen size: '+scr.w+'x'+scr.h+'px');
-monthW=scr.w/14; // 14 months visible in graph
-kWh=scr.h/1500; // graph height equivalent to 1500kW 
-console.log('monthW: '+monthW+'px');
+intervalX=Math.floor(scr.w/14); // 14 intervals visible across graph
+intervalY=Math.floor(scr.h/15); // 15 intervals vertically 
+console.log('intervals: '+intervalX+'x'+intervalY+'px');
 id("canvas").width=scr.w;
 id("canvas").height=scr.h;
 console.log('canvas size: '+id("canvas").width+'x'+id("canvas").height);

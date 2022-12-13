@@ -98,8 +98,8 @@ input {
 	float: left;
 	margin-left:2%;
 }
-.blue {
-	color: skyblue;
+.red {
+	color: hotpink;
 	display: block;
 	position: absolute;
 	float: left;
@@ -112,6 +112,14 @@ input {
 	float: left;
 	margin-left:36%;
 }
+.blue {
+	color: skyblue;
+	display: block;
+	position: absolute;
+	float: left;
+	margin-left:52%;
+}
+/*
 .plum {
 	color: plum;
 	display: block;
@@ -119,6 +127,7 @@ input {
 	float: left;
 	margin-left:52%;
 }
+*/
 .orange {
 	color: orange;
 	display: block;
