@@ -396,7 +396,7 @@ function drawGraph(interval) {
 		if(interval=='month') { // MODIFY TO WORK FOR QUARTERS AND YEARS
 			m=parseInt(logs[i].date.substr(5,2))-1;
 			canvas.fillText(letters.charAt(m),x-5,scr.h-margin-12*intervalY-5); // month letter just above and below grid
-			canvas.fillText(letters.charAt(m),x-5,scr.h-margin+20);
+			canvas.fillText(letters.charAt(m),x-5,scr.h-margin-5);
 			if(m<1) {
 				year=logs[i].date.substr(0,4);
 				canvas.fillText(year,x,scr.h-margin-12*intervalY-24); // YYYY above month labels
@@ -409,7 +409,7 @@ function drawGraph(interval) {
 			m%=4; // 1,2,3,0
 			console.log('quarter: '+letters.charAt(m)+': '+letters[m]);
 			canvas.fillText(letters.charAt(m),x-5,scr.h-margin-12*intervalY-5); // quarter symbol just above and below grid
-			canvas.fillText(letters.charAt(m),x-5,scr.h-margin+20);
+			canvas.fillText(letters.charAt(m),x-5,scr.h-margin-5);
 			if(m<1) {
 				year=logs[i].date.substr(0,4);
 				year++; // start of following year
@@ -420,7 +420,7 @@ function drawGraph(interval) {
 			year=logs[i].date.substr(2,2); // YY just above and below grid
 			console.log('year: '+year);
 			canvas.fillText(year,x-5,scr.h-margin-12*intervalY-5); // quarter symbol just above and below grid
-			canvas.fillText(year,x-5,scr.h-margin+20);
+			canvas.fillText(year,x-5,scr.h-margin-5);
 		}
 		i+=step;
 	}
