@@ -24,13 +24,18 @@
 <div id='buttonNew' class='round-button'><img src='newButton24px.svg'/></div>
 
 <div id="logDialog" class="dialog">
-    <div class="dialog-body">date <input type="date" id="logDate"/><span class='right'>units: kWh</span></div>
-    <div class="dialog-body">grid <input type='number' id='logGrid' min='0' max='99999'/> PV <input type='number' id='logPV' min='0' max='99999'/></div>
-    <div class="dialog-body">HP yield <input type='number' id='logYield' min='0' max='99999'/> for <input type='number' id='logCons' min='0' max='99999'/></div>
+    <div class="dialog-body">date: <input type="date" id="logDate"/><span class='right'>kWh</span></div>
+    <div class='dialog-title'>grid input...</div>
+    <div class="dialog-body">meter: <input type='number' id='logGrid' min='0' max='99999'/> &nbsp;&nbsp;Lux: <input type='number' id='luxGrid' min='0' max='99999'/></div>
+    <div class='dialog-title'>PV input...</div>
+    <div class='dialog-body'>meter: <input type='number' id='logPV' min='0' max='99999'/> &nbsp;&nbsp;Lux: <input type='number' id='luxPV' min='0' max='99999'/></div>
+    <div class='dialog-title'>usage...</div>
+    <div class="dialog-body">ASHP: <input type='number' id='logCons' min='0' max='99999'/> &nbsp;&nbsp;Lux: <input type='number' id='luxCons' min='0' max='99999'/></div>
+    <div class='dialog-body'>ASHP yield: <input type='number' id='logYield' min='0' max='99999'/></div>
     <div class="dialog-body">thermal solar yield: <input type='number' id='logSolar' min='0' max='99999'/></div>
+    <div class="dialog-body">battery charging: <input type='number' id='luxBattery' min='0' max='99999'/></div>
     <div class="dialog-buttons">
 	    <button id="buttonDeleteLog" class="delete-button"></button>
-	  	<!--button id="buttonCancelLog" class="cancel-button"></button-->
       	<button id="buttonSaveLog" class="save-button"></button>  
     </div>
 </div>

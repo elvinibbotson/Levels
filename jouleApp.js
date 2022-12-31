@@ -118,6 +118,10 @@ id('buttonSaveLog').addEventListener('click', function() {
 	log.yield=id('logYield').value;
 	log.cons=id('logCons').value;
 	log.solar=id('logSolar').value;
+	log.luxGrid=id('luxGrid').value;
+	log.luxPV=id('luxPV').value;
+	log.luxCons=id('luxCons').value;
+	log.battery=id('luxBattery').value;
     toggleDialog('logDialog',false);
 	console.log("save log - date: "+log.date);
 	var dbTransaction=db.transaction('logs',"readwrite");
@@ -320,13 +324,13 @@ function drawGraph(interval) {
 	// then draw legend
 	overlay.font='20px Monospace';
 	overlay.fillStyle='hotpink';
-	overlay.fillText('grid',25,20);
+	overlay.fillText('input',25,20);
 	overlay.fillStyle='lightgreen';
 	overlay.fillText('PV',100,20);
 	overlay.fillStyle='lightblue';
 	overlay.fillText('yield',150,20);
 	overlay.fillStyle='orange';
-	overlay.fillText('input',225,20);
+	overlay.fillText('usage',225,20);
 	overlay.fillStyle='yellow';
 	overlay.fillText('solar',300,20);
 	overlay.lineWidth=1;
@@ -427,6 +431,7 @@ function drawGraph(interval) {
 	canvas.stroke();
 	// first draw grid power usage
 	canvas.strokeStyle='hotpink';
+	canvas.setLineDash([]);
 	canvas.lineWidth=3;
 	canvas.beginPath();
 	i=startLog;
@@ -443,9 +448,29 @@ function drawGraph(interval) {
 		i+=step;
 	}
     canvas.stroke();
+    // then same for LuxPower data
+    canvas.strokeStyle='hotpink';
+    canvas.setLineDash([5,10]);
+	canvas.lineWidth=3;
+	canvas.beginPath();
+	i=startLog;
+	x=(Math.floor(i/step)-1)*intervalX;
+	var val=0;
+	console.log('start from log '+i+' grid');
+	while(i<logs.length) {
+		val=logs[i].luxGrid-logs[i-step].luxGrid; // kWh
+		val*=intervalY/intervalV; // convert kWh to pixels
+		x+=intervalX;
+		var y=scr.h-margin-val;
+		if(i==startLog) canvas.moveTo(x,y);
+		else canvas.lineTo(x,y);
+		i+=step;
+	}
+    canvas.stroke();
     // next draw PV yield
     console.log('PV');
     canvas.strokeStyle='lightgreen';
+    canvas.setLineDash([]);
     canvas.beginPath();
     i=startLog;
     x=(Math.floor(i/step)-1)*intervalX;
@@ -459,9 +484,27 @@ function drawGraph(interval) {
 		i+=step;
 	}
 	canvas.stroke();
+	// same for LuxPower data
+	console.log('PV');
+    canvas.strokeStyle='lightgreen';
+    canvas.setLineDash([5,10]);
+    canvas.beginPath();
+    i=startLog;
+    x=(Math.floor(i/step)-1)*intervalX;
+    while(i<logs.length) {
+		val=logs[i].luxPV-logs[i-step].luxPV; // kWh
+		val*=intervalY/intervalV; // convert kWh to pixels
+		x+=intervalX
+		var y=scr.h-margin-val;
+		if(i==startLog) canvas.moveTo(x,y);
+		else canvas.lineTo(x,y);
+		i+=step;
+	}
+	canvas.stroke();
 	// heat pump yield...
 	console.log('yield');
 	canvas.strokeStyle='skyblue';
+	canvas.setLineDash([]);
     canvas.beginPath();
     i=startLog;
     x=(Math.floor(i/step)-1)*intervalX;
@@ -491,9 +534,12 @@ function drawGraph(interval) {
 		i+=step;
     }
 	canvas.stroke();
+	// then same for LuxPower total consumption
+	//
 	// thermal solar yield
 	console.log('solar');
 	canvas.strokeStyle='yellow';
+	canvas.setLineDash([]);
     canvas.beginPath();
     i=startLog;
     x=(Math.floor(i/step)-1)*intervalX;
@@ -507,6 +553,8 @@ function drawGraph(interval) {
 		i+=step;
     }
 	canvas.stroke();
+	// finally, LuxPower battery data
+	//
 }
 
 function selectLog() {

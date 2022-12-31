@@ -78,6 +78,7 @@ input {
   left: 0;
   top: 0;
   width: 100%;
+  color: white;
   background: dimgray;
   display: none;
   z-index: 100;
