@@ -93,6 +93,12 @@ id('graphOverlay').addEventListener('click',function(event) {
 // TAP ON HEADER
 id('heading').addEventListener('click',function() {toggleDialog('dataDialog',true);})
 
+// DISPLAY MESSAGE
+function display(message) {
+	id('message').innerText=message;
+	showDialog('messageDialog',true);
+}
+
 // NEW BUTTON
 id('buttonNew').addEventListener('click', function() { // show the log dialog
 	console.log("show add jotting dialog with today's date, 1 day duration, blank text field and delete button disabled");
@@ -599,7 +605,7 @@ id('confirmImport').addEventListener('click',function(event) {
     	}
     	dbTransaction.oncomplete=function(e) {
     		toggleDialog('importDialog',false);
-    		alert("logs imported - restart");
+    		display("logs imported - restart");
     	}
     }
     fileReader.onerror=function() {
@@ -647,7 +653,7 @@ function backup() {
    			a.download=fileName;
     		document.body.appendChild(a);
     		a.click();
-			alert(fileName+" saved to downloads folder");
+			display(fileName+" saved to downloads folder");
 			var today=new Date();
 			lastSave=today.getMonth();
 			window.localStorage.setItem('jouleSave',lastSave); // remember month of backup
@@ -700,7 +706,7 @@ request.onupgradeneeded=function(event) {
 	db=event.target.result;
 	if (!db.objectStoreNames.contains('logs')) { // if there's no "logs" store..
     	db.createObjectStore('logs', {keyPath: 'id',  autoIncrement: true}); // ..create it
-    	alert('new logs object store created');
+    	display('new logs object store created');
 	}
 	console.log("new logs ObjectStore created");
 };
