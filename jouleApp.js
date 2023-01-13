@@ -330,13 +330,13 @@ function drawGraph(interval) {
 	// then draw legend
 	overlay.font='20px Monospace';
 	overlay.fillStyle='hotpink';
-	overlay.fillText('input',25,20);
+	overlay.fillText('grid',25,20);
 	overlay.fillStyle='lightgreen';
 	overlay.fillText('PV',100,20);
-	overlay.fillStyle='lightblue';
-	overlay.fillText('yield',150,20);
+	overlay.fillStyle='skyblue';
+	overlay.fillText('heat',150,20);
 	overlay.fillStyle='orange';
-	overlay.fillText('usage',225,20);
+	overlay.fillText('ASHP',225,20);
 	overlay.fillStyle='yellow';
 	overlay.fillText('solar',300,20);
 	overlay.lineWidth=1;
