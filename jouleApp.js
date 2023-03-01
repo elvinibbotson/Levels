@@ -96,7 +96,7 @@ id('heading').addEventListener('click',function() {toggleDialog('dataDialog',tru
 // DISPLAY MESSAGE
 function display(message) {
 	id('message').innerText=message;
-	showDialog('messageDialog',true);
+	toggleDialog('messageDialog',true);
 }
 
 // NEW BUTTON
