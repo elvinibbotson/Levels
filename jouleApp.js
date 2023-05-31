@@ -107,9 +107,9 @@ id('buttonNew').addEventListener('click', function() { // show the log dialog
 	id('logDate').value=d.substr(0,10);
 	id('logGrid').value=null;
 	id('logPV').value=null;
+	id('logSolar').value=null;
 	id('logYield').value=null;
 	id('logCons').value=null;
-	id('logSolar').value=null;
 	log={};
 	logIndex=null;
 	id("buttonDeleteLog").disabled=true;
@@ -121,13 +121,15 @@ id('buttonSaveLog').addEventListener('click', function() {
 	log.date=id('logDate').value;
 	log.grid=id('logGrid').value;
 	log.pv=id('logPV').value;
+	log.solar=id('logSolar').value;
 	log.yield=id('logYield').value;
 	log.cons=id('logCons').value;
-	log.solar=id('logSolar').value;
+	/*
 	log.luxGrid=id('luxGrid').value;
 	log.luxPV=id('luxPV').value;
 	log.luxCons=id('luxCons').value;
 	log.battery=id('luxBattery').value;
+	*/
     toggleDialog('logDialog',false);
 	console.log("save log - date: "+log.date);
 	var dbTransaction=db.transaction('logs',"readwrite");
@@ -237,9 +239,9 @@ function openLog() {
 	id('logDate').value=log.date;
 	id('logGrid').value=log.grid;
 	id('logPV').value=log.pv;
+	id('logSolar').value=log.solar;
 	id('logYield').value=log.yield;
 	id('logCons').value=log.cons;
-	id('logSolar').value=log.solar;
 	id('buttonDeleteLog').disabled=false;
 	id('buttonDeleteLog').style.color='red';
 }
@@ -454,7 +456,7 @@ function drawGraph(interval) {
 		i+=step;
 	}
     canvas.stroke();
-    // then same for LuxPower data
+    /* then same for LuxPower data
     canvas.strokeStyle='hotpink';
     canvas.setLineDash([5,10]);
 	canvas.lineWidth=3;
@@ -473,6 +475,7 @@ function drawGraph(interval) {
 		i+=step;
 	}
     canvas.stroke();
+    */
     // next draw PV yield
     console.log('PV');
     canvas.strokeStyle='lightgreen';
@@ -490,7 +493,7 @@ function drawGraph(interval) {
 		i+=step;
 	}
 	canvas.stroke();
-	// same for LuxPower data
+	/* same for LuxPower data
 	console.log('PV');
     canvas.strokeStyle='lightgreen';
     canvas.setLineDash([5,10]);
@@ -506,6 +509,24 @@ function drawGraph(interval) {
 		else canvas.lineTo(x,y);
 		i+=step;
 	}
+	canvas.stroke();
+	*/
+	// thermal solar yield
+	console.log('solar');
+	canvas.strokeStyle='yellow';
+	canvas.setLineDash([]);
+    canvas.beginPath();
+    i=startLog;
+    x=(Math.floor(i/step)-1)*intervalX;
+    while(i<logs.length) {
+    	val=logs[i].solar-logs[i-step].solar; // kWh
+		val*=intervalY/intervalV; // convert kWh to pixels
+		x+=intervalX;
+		var y=scr.h-margin-val;
+		if(i==startLog) canvas.moveTo(x,y);
+		else canvas.lineTo(x,y);
+		i+=step;
+    }
 	canvas.stroke();
 	// heat pump yield...
 	console.log('yield');
@@ -541,26 +562,7 @@ function drawGraph(interval) {
     }
 	canvas.stroke();
 	// then same for LuxPower total consumption
-	//
-	// thermal solar yield
-	console.log('solar');
-	canvas.strokeStyle='yellow';
-	canvas.setLineDash([]);
-    canvas.beginPath();
-    i=startLog;
-    x=(Math.floor(i/step)-1)*intervalX;
-    while(i<logs.length) {
-    	val=logs[i].solar-logs[i-step].solar; // kWh
-		val*=intervalY/intervalV; // convert kWh to pixels
-		x+=intervalX;
-		var y=scr.h-margin-val;
-		if(i==startLog) canvas.moveTo(x,y);
-		else canvas.lineTo(x,y);
-		i+=step;
-    }
-	canvas.stroke();
 	// finally, LuxPower battery data
-	//
 }
 
 function selectLog() {
