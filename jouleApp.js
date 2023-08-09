@@ -320,7 +320,6 @@ function drawGraph(interval) {
 	id('graphPanel').style.left=canvasL+'px';
 	id("graphPanel").style.width=(n*intervalX+10)+'px';
 	id('canvas').width=n*intervalX+10;
-	console.log('canvas width: '+id('canvas').width+'; left: '+canvasL);
 	id('graphPanel').style.display='block';
 	id('graphOverlay').style.display='block';
 	// clear canvases
@@ -356,13 +355,18 @@ function drawGraph(interval) {
 	overlay.fillText('quarter',scr.w/3+20,46);
 	overlay.fillText('year',2*scr.w/3+20,46);
 	// draw horizontal gridlines and kWh labels on overlay
-	for(i=0;i<12;i++) overlay.fillText(i*intervalV,2,scr.h-margin-i*intervalY-5); // kWh at 100px intervals
-	overlay.fillText('kWh',2,scr.h-margin-12*intervalY+25); // vertical axis label
+	for(i=1;i<11;i++) overlay.fillText(i*intervalV,2,scr.h-margin-i*intervalY-5); // kWh at 100px intervals
+	overlay.fillText('kWh',2,scr.h-margin-11*intervalY+20); // vertical axis label
 	overlay.strokeStyle='silver'; // grey lines
 	overlay.beginPath();
-	for(i=0;i<13;i++) {
+	for(i=1;i<13;i++) {
 		overlay.moveTo(0,scr.h-margin-i*intervalY);
 		overlay.lineTo(scr.w,scr.h-margin-i*intervalY); // grey lines
+	}
+	// draw horizontal gridlines for COP graph
+	for(i=0;i<6;i++) {
+		overlay.moveTo(0,scr.h-margin+i*intervalY/5);
+		overlay.lineTo(scr.w,scr.h-margin+i*intervalY/5); // grey lines
 	}
 	overlay.stroke();
 	// set start log for drawing graphs
@@ -405,13 +409,13 @@ function drawGraph(interval) {
 		x=Math.floor(i/step)*intervalX;
 		canvas.moveTo(x,scr.h-margin);
 		canvas.lineTo(x,scr.h-margin-12*intervalY); // vertical gridline
-		if(interval=='month') { // MODIFY TO WORK FOR QUARTERS AND YEARS
+		if(interval=='month') {
 			m=parseInt(logs[i].date.substr(5,2))-1;
-			canvas.fillText(letters.charAt(m),x-5,scr.h-margin-12*intervalY-5); // month letter just above and below grid
+			canvas.fillText(letters.charAt(m),x-5,scr.h-margin-11*intervalY-5); // month letter just above and below grid
 			canvas.fillText(letters.charAt(m),x-5,scr.h-margin-5);
 			if(m<1) {
 				year=logs[i].date.substr(0,4);
-				canvas.fillText(year,x,scr.h-margin-12*intervalY-24); // YYYY above month labels
+				canvas.fillText(year,x,scr.h-margin-11*intervalY-24); // YYYY above month labels
 			}
 		}
 		else if(interval=='quarter') {
@@ -420,18 +424,18 @@ function drawGraph(interval) {
 			m/=3; // 1,2,3,4
 			m%=4; // 1,2,3,0
 			console.log('quarter: '+letters.charAt(m)+': '+letters[m]);
-			canvas.fillText(letters.charAt(m),x-5,scr.h-margin-12*intervalY-5); // quarter symbol just above and below grid
+			canvas.fillText(letters.charAt(m),x-5,scr.h-margin-11*intervalY-5); // quarter symbol just above and below grid
 			canvas.fillText(letters.charAt(m),x-5,scr.h-margin-5);
 			if(m<1) {
 				year=logs[i].date.substr(0,4);
 				year++; // start of following year
-				canvas.fillText(year,x-5,scr.h-margin-12*intervalY-24); // YYYY above month labels
+				canvas.fillText(year,x-5,scr.h-margin-11*intervalY-24); // YYYY above month labels
 			}
 		}
 		else {
 			year=logs[i].date.substr(2,2); // YY just above and below grid
 			console.log('year: '+year);
-			canvas.fillText(year,x-5,scr.h-margin-12*intervalY-5); // quarter symbol just above and below grid
+			canvas.fillText(year,x-5,scr.h-margin-11*intervalY-5); // quarter symbol just above and below grid
 			canvas.fillText(year,x-5,scr.h-margin-5);
 		}
 		i+=step;
@@ -456,26 +460,6 @@ function drawGraph(interval) {
 		i+=step;
 	}
     canvas.stroke();
-    /* then same for LuxPower data
-    canvas.strokeStyle='hotpink';
-    canvas.setLineDash([5,10]);
-	canvas.lineWidth=3;
-	canvas.beginPath();
-	i=startLog;
-	x=(Math.floor(i/step)-1)*intervalX;
-	var val=0;
-	console.log('start from log '+i+' grid');
-	while(i<logs.length) {
-		val=logs[i].luxGrid-logs[i-step].luxGrid; // kWh
-		val*=intervalY/intervalV; // convert kWh to pixels
-		x+=intervalX;
-		var y=scr.h-margin-val;
-		if(i==startLog) canvas.moveTo(x,y);
-		else canvas.lineTo(x,y);
-		i+=step;
-	}
-    canvas.stroke();
-    */
     // next draw PV yield
     console.log('PV');
     canvas.strokeStyle='lightgreen';
@@ -493,24 +477,6 @@ function drawGraph(interval) {
 		i+=step;
 	}
 	canvas.stroke();
-	/* same for LuxPower data
-	console.log('PV');
-    canvas.strokeStyle='lightgreen';
-    canvas.setLineDash([5,10]);
-    canvas.beginPath();
-    i=startLog;
-    x=(Math.floor(i/step)-1)*intervalX;
-    while(i<logs.length) {
-		val=logs[i].luxPV-logs[i-step].luxPV; // kWh
-		val*=intervalY/intervalV; // convert kWh to pixels
-		x+=intervalX
-		var y=scr.h-margin-val;
-		if(i==startLog) canvas.moveTo(x,y);
-		else canvas.lineTo(x,y);
-		i+=step;
-	}
-	canvas.stroke();
-	*/
 	// thermal solar yield
 	console.log('solar');
 	canvas.strokeStyle='yellow';
@@ -545,7 +511,7 @@ function drawGraph(interval) {
 		i+=step;
 	}
 	canvas.stroke();
-	// heat pump input
+	// heat pump input...
 	console.log('usage');
 	canvas.strokeStyle='orange';
     canvas.beginPath();
@@ -561,8 +527,31 @@ function drawGraph(interval) {
 		i+=step;
     }
 	canvas.stroke();
-	// then same for LuxPower total consumption
-	// finally, LuxPower battery data
+	// COP graph...
+	canvas.fillStyle='black'; // black background
+	canvas.fillRect(0,scr.h-margin,id('canvas').width+10,intervalY);
+	canvas.fillStyle='white';
+	canvas.strokeWidth=0;
+	canvas.beginPath();
+	i=startLog;
+    x=(Math.floor(i/step)-1)*intervalX;
+    canvas.moveTo(0,scr.h-margin+intervalY);
+    while(i<logs.length) {
+    	val=(logs[i].yield-logs[i-step].yield)/(logs[i].cons-logs[i-step].cons); // COP ratio
+    	console.log('******* COP: '+val);
+		val*=intervalY/5; // convert kWh to pixels
+		console.log('******* '+val+' pixels');
+		x+=intervalX;
+		var y=scr.h-margin+intervalY-val;
+		// if(i==startLog) canvas.moveTo(x,y);
+		// else 
+		canvas.lineTo(x,y);
+		i+=step;
+    }
+    canvas.lineTo(x,scr.h-margin+intervalY);
+    canvas.closePath();
+    canvas.fill();
+    overlay.fillText('COP',5,scr.h-margin+20);
 }
 
 function selectLog() {
