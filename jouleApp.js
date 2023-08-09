@@ -355,7 +355,7 @@ function drawGraph(interval) {
 	overlay.fillText('quarter',scr.w/3+20,46);
 	overlay.fillText('year',2*scr.w/3+20,46);
 	// draw horizontal gridlines and kWh labels on overlay
-	for(i=1;i<11;i++) overlay.fillText(i*intervalV,2,scr.h-margin-i*intervalY-5); // kWh at 100px intervals
+	for(i=1;i<10;i++) overlay.fillText(i*intervalV,2,scr.h-margin-(i+1)*intervalY-5); // kWh at 100px intervals
 	overlay.fillText('kWh',2,scr.h-margin-11*intervalY+20); // vertical axis label
 	overlay.strokeStyle='silver'; // grey lines
 	overlay.beginPath();
@@ -365,8 +365,8 @@ function drawGraph(interval) {
 	}
 	// draw horizontal gridlines for COP graph
 	for(i=0;i<6;i++) {
-		overlay.moveTo(0,scr.h-margin+i*intervalY/5);
-		overlay.lineTo(scr.w,scr.h-margin+i*intervalY/5); // grey lines
+		overlay.moveTo(0,scr.h-margin-intervalY+i*intervalY/5);
+		overlay.lineTo(scr.w,scr.h-margin-intervalY+i*intervalY/5); // grey lines
 	}
 	overlay.stroke();
 	// set start log for drawing graphs
@@ -408,11 +408,11 @@ function drawGraph(interval) {
 	while(i<logs.length) {
 		x=Math.floor(i/step)*intervalX;
 		canvas.moveTo(x,scr.h-margin);
-		canvas.lineTo(x,scr.h-margin-12*intervalY); // vertical gridline
+		canvas.lineTo(x,scr.h-margin-11*intervalY); // vertical gridline
 		if(interval=='month') {
 			m=parseInt(logs[i].date.substr(5,2))-1;
 			canvas.fillText(letters.charAt(m),x-5,scr.h-margin-11*intervalY-5); // month letter just above and below grid
-			canvas.fillText(letters.charAt(m),x-5,scr.h-margin-5);
+			canvas.fillText(letters.charAt(m),x-5,scr.h-margin-intervalY-5);
 			if(m<1) {
 				year=logs[i].date.substr(0,4);
 				canvas.fillText(year,x,scr.h-margin-11*intervalY-24); // YYYY above month labels
@@ -454,7 +454,7 @@ function drawGraph(interval) {
 		val=logs[i].grid-logs[i-step].grid; // kWh
 		val*=intervalY/intervalV; // convert kWh to pixels
 		x+=intervalX;
-		var y=scr.h-margin-val;
+		var y=scr.h-margin-intervalY-val;
 		if(i==startLog) canvas.moveTo(x,y);
 		else canvas.lineTo(x,y);
 		i+=step;
@@ -471,7 +471,7 @@ function drawGraph(interval) {
 		val=logs[i].pv-logs[i-step].pv; // kWh
 		val*=intervalY/intervalV; // convert kWh to pixels
 		x+=intervalX
-		var y=scr.h-margin-val;
+		var y=scr.h-margin-intervalY-val;
 		if(i==startLog) canvas.moveTo(x,y);
 		else canvas.lineTo(x,y);
 		i+=step;
@@ -488,7 +488,7 @@ function drawGraph(interval) {
     	val=logs[i].solar-logs[i-step].solar; // kWh
 		val*=intervalY/intervalV; // convert kWh to pixels
 		x+=intervalX;
-		var y=scr.h-margin-val;
+		var y=scr.h-margin-intervalY-val;
 		if(i==startLog) canvas.moveTo(x,y);
 		else canvas.lineTo(x,y);
 		i+=step;
@@ -505,7 +505,7 @@ function drawGraph(interval) {
 		val=logs[i].yield-logs[i-step].yield; // kWh
 		val*=intervalY/intervalV; // convert kWh to pixels
 		x+=intervalX;
-		var y=scr.h-margin-val;
+		var y=scr.h-margin-intervalY-val;
 		if(i==startLog) canvas.moveTo(x,y);
 		else canvas.lineTo(x,y);
 		i+=step;
@@ -521,7 +521,7 @@ function drawGraph(interval) {
     	val=logs[i].cons-logs[i-step].cons; // kWh
 		val*=intervalY/intervalV; // convert kWh to pixels
 		x+=intervalX;
-		var y=scr.h-margin-val;
+		var y=scr.h-margin-intervalY-val;
 		if(i==startLog) canvas.moveTo(x,y);
 		else canvas.lineTo(x,y);
 		i+=step;
@@ -529,29 +529,29 @@ function drawGraph(interval) {
 	canvas.stroke();
 	// COP graph...
 	canvas.fillStyle='black'; // black background
-	canvas.fillRect(0,scr.h-margin,id('canvas').width+10,intervalY);
+	canvas.fillRect(0,scr.h-margin-intervalY,id('canvas').width+10,intervalY);
 	canvas.fillStyle='white';
 	canvas.strokeWidth=0;
 	canvas.beginPath();
 	i=startLog;
     x=(Math.floor(i/step)-1)*intervalX;
-    canvas.moveTo(0,scr.h-margin+intervalY);
+    canvas.moveTo(0,scr.h-margin);
     while(i<logs.length) {
     	val=(logs[i].yield-logs[i-step].yield)/(logs[i].cons-logs[i-step].cons); // COP ratio
     	console.log('******* COP: '+val);
 		val*=intervalY/5; // convert kWh to pixels
 		console.log('******* '+val+' pixels');
 		x+=intervalX;
-		var y=scr.h-margin+intervalY-val;
+		var y=scr.h-margin-val;
 		// if(i==startLog) canvas.moveTo(x,y);
 		// else 
 		canvas.lineTo(x,y);
 		i+=step;
     }
-    canvas.lineTo(x,scr.h-margin+intervalY);
+    canvas.lineTo(x,scr.h-margin);
     canvas.closePath();
     canvas.fill();
-    overlay.fillText('COP',5,scr.h-margin+20);
+    overlay.fillText('COP',5,scr.h-margin-intervalY+20);
 }
 
 function selectLog() {
