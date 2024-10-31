@@ -22,14 +22,14 @@ input {
 	font-size: 1.2em;
 	height: 34px;
 	color: white;
-	background-color: black;
+	background-color: dimgray;
 	border: none;
 }
 
 .text-button {
 	border: 2px solid white;
 	border-radius: 10px;
-	margin: 15px;
+	margin: 10px;
 	padding: 5px;
 	font-size:1.2em;
 	font-weight: bold;
@@ -74,14 +74,18 @@ input {
 	font-size: 1.5em;
 }
 .dialog {
-  position: fixed;
-  left: 0;
-  top: 0;
-  width: 100%;
-  color: white;
-  background: dimgray;
-  display: none;
-  z-index: 100;
+	position: fixed;
+	left: 0;
+	right: 0;
+	top: 0;
+	padding: 10px;
+	margin: 10px;
+	border: solid white 2px;
+	border-radius: 10px;
+	color: white;
+	background-color: gray;
+	z-index: 10;
+	display: none;
 }
 .dialog > div {
   padding-top: 24px;
@@ -120,15 +124,6 @@ input {
 	float: left;
 	margin-left:52%;
 }
-/*
-.plum {
-	color: plum;
-	display: block;
-	position: absolute;
-	float: left;
-	margin-left:52%;
-}
-*/
 .orange {
 	color: orange;
 	display: block;
@@ -178,7 +173,8 @@ input {
 }
 
 #fileChooser {
-	margin: 20px;
+	width: 100%;
+	margin: 10px;
 	font-size: 1.5em;
 	background-color: gray;
 }
