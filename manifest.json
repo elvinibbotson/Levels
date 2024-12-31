@@ -1,9 +1,9 @@
 {
-  "name": "Losses PWA",
-  "short_name": "Losses",
+  "name": "Levels PWA",
+  "short_name": "Levels",
   "icons": [
 	{
-		"src": "Losses.png",
+		"src": "Levels.png",
 		"sizes": "512x512",
 		"type": "image/png",
 		"purpose": "any maskable"
