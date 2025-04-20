@@ -106,8 +106,8 @@ id('buttonNew').addEventListener('click', function() { // show the log dialog
 	var d=new Date().toISOString();
 	id('logDate').value=d.substr(0,10);
 	id('logGrid').value=null;
-	id('logPV').value=null;
-	id('logSolar').value=null;
+	id('logPVa').value=null;
+	id('logPVb').value=null;
 	id('logYield').value=null;
 	id('logCons').value=null;
 	log={};
@@ -120,16 +120,10 @@ id('buttonNew').addEventListener('click', function() { // show the log dialog
 id('buttonSaveLog').addEventListener('click', function() {
 	log.date=id('logDate').value;
 	log.grid=id('logGrid').value;
-	log.pv=id('logPV').value;
-	log.solar=id('logSolar').value;
+	log.pv=id('logPVa').value;
+	log.pvB=id('logPVb').value;
 	log.yield=id('logYield').value;
 	log.cons=id('logCons').value;
-	/*
-	log.luxGrid=id('luxGrid').value;
-	log.luxPV=id('luxPV').value;
-	log.luxCons=id('luxCons').value;
-	log.battery=id('luxBattery').value;
-	*/
     toggleDialog('logDialog',false);
 	console.log("save log - date: "+log.date);
 	var dbTransaction=db.transaction('logs',"readwrite");
@@ -279,7 +273,7 @@ function populateList() {
 				mon=parseInt(d.substr(5,2))-1;
 				mon*=3;
 				d=months.substr(mon,3)+" "+d.substr(2,2);
-				html='<span class="grey">'+d+'</span><span class="red">'+pad(logs[i].grid)+'</span><span class="green">'+pad(logs[i].pv)+'</span><span class="blue">'+pad(logs[i].yield)+'</span><span class="orange">'+pad(logs[i].cons)+'</span><span class="yellow">'+pad(logs[i].solar)+'</span>';
+				html='<span class="grey">'+d+'</span><span class="red">'+pad(logs[i].grid)+'</span><span class="green">'+pad(logs[i].pv)+'</span><span class="yellow">'+pad(logs[i].pvB)+'</span><span class="blue">'+pad(logs[i].yield)+'</span><span class="orange">'+pad(logs[i].cons)+'</span>';
 				itemText.innerHTML=html;
 				listItem.appendChild(itemText);
 		  		id('list').appendChild(listItem);
@@ -588,6 +582,11 @@ id('confirmImport').addEventListener('click',function(event) {
     	var dbObjectStore=dbTransaction.objectStore('logs');
     	for(var i=0;i<logs.length;i++) {
     		console.log("add log "+i);
+    		// deal with legacy 'solar' values (thermal solar)
+    		if(logs[i].solar) {
+    			logs[i].pvB=0;
+    			logs[i].solar=null;
+    		}
     		var request = dbObjectStore.add(logs[i]);
     		request.onsuccess = function(e) {
     			console.log("log "+i+" added");

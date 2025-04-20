@@ -117,22 +117,22 @@ input {
 	float: left;
 	margin-left:36%;
 }
-.blue {
-	color: skyblue;
+.yellow {
+	color: yellow;
 	display: block;
 	position: absolute;
 	float: left;
 	margin-left:52%;
 }
-.orange {
-	color: orange;
+.blue {
+	color: skyblue;
 	display: block;
 	position: absolute;
 	float: left;
 	margin-left:68%;
 }
-.yellow {
-	color: yellow;
+.orange {
+	color: orange;
 	display: block;
 	position: absolute;
 	float: left;
