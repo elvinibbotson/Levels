@@ -327,13 +327,13 @@ function drawGraph(interval) {
 	overlay.fillStyle='hotpink';
 	overlay.fillText('grid',25,20);
 	overlay.fillStyle='lightgreen';
-	overlay.fillText('PV',100,20);
-	overlay.fillStyle='skyblue';
-	overlay.fillText('heat',150,20);
-	overlay.fillStyle='orange';
-	overlay.fillText('ASHP',225,20);
+	overlay.fillText('pvA',100,20);
 	overlay.fillStyle='yellow';
-	overlay.fillText('solar',300,20);
+	overlay.fillText('pvB',150,20);
+	overlay.fillStyle='skyblue';
+	overlay.fillText('heat',225,20);
+	overlay.fillStyle='orange';
+	overlay.fillText('ASHP',300,20);
 	overlay.lineWidth=1;
 	overlay.fillStyle='#333'; // draw 3 dark (background) tabs
 	overlay.fillRect(5,24,scr.w/3-10,24);
