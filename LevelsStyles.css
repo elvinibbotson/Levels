@@ -6,7 +6,7 @@ html, body {
   margin: 0;
   height: 100%;
   width: 100%;
-  font-family: 'Helvetica', 'Verdana', sans-serif;
+  font-family: 'Lucida Console','Courier',monospace;
   font-weight: 400;
   font-display: optional;
   color: #444;
@@ -69,7 +69,7 @@ input {
 .log-item {
 	height:24px;
 	display: block;
-	font-family: Monospace;
+	font-family: 'Lucida Console','Courier',monospace;
 	font-weight: bold;
 	font-size: 1.5em;
 }
@@ -182,7 +182,7 @@ input {
 #logDate {
 	width: 120px;
 	height: 34px;
-	font-family: 'Helvetica', 'Verdana', sans-serif;
+	font-family: 'Lucida Console','Courier',monospace;
 }
 
 #heading {
@@ -192,18 +192,17 @@ input {
 	height: 30px;
 	width: 100%;
 	font-size: 1.5em;
-	font-family: Monospace;
+	font-family: 'Lucida Console','Courier',monospace;
 	font-weight: bold;
 	font-size: 1.5em;
 	color: white;
-	background-color: dimgray;
+	background-color: black;
 	display='block';
 }
 
 #main {
 	width: 100%;
 	top: 30px;
-	/* height: 100%;*/
 }
 
 #listPanel {
@@ -218,7 +217,7 @@ input {
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   position: relative;
-  background-color: #333;;
+  background-color: dimgray;
   display: block;
 }
 
