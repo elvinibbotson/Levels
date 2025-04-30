@@ -8,6 +8,7 @@ html, body {
   width: 100%;
   font-family: 'Lucida Console','Courier',monospace;
   font-weight: 400;
+  font-size: 0.75em;
   font-display: optional;
   color: #444;
   background-color: dimgray;

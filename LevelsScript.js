@@ -454,7 +454,7 @@ function drawGraph(interval) {
 		i+=step;
 	}
     canvas.stroke();
-    // next draw PV yield
+    // next draw PVa yield
     console.log('PV');
     canvas.strokeStyle='lightgreen';
     canvas.setLineDash([]);
@@ -471,15 +471,15 @@ function drawGraph(interval) {
 		i+=step;
 	}
 	canvas.stroke();
-	// thermal solar yield
-	console.log('solar');
+	// PVb yield
+	console.log('PVb');
 	canvas.strokeStyle='yellow';
 	canvas.setLineDash([]);
     canvas.beginPath();
     i=startLog;
     x=(Math.floor(i/step)-1)*intervalX;
     while(i<logs.length) {
-    	val=logs[i].solar-logs[i-step].solar; // kWh
+    	val=logs[i].pvB-logs[i-step].pvB; // kWh
 		val*=intervalY/intervalV; // convert kWh to pixels
 		x+=intervalX;
 		var y=scr.h-margin-intervalY-val;
