@@ -504,6 +504,7 @@ function saveData() {
 	console.log('log data: '+data);
 	window.localStorage.setItem('logs',data);
 	console.log('logs store updated');
+	alert(logs.length+' logs saved');
 }
 // IMPORT FILE
 id("fileChooser").addEventListener('change',function() {
