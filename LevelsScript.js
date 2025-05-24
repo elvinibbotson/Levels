@@ -1,8 +1,6 @@
 function id(el) {
-	// console.log("return element whose id is "+el);
 	return document.getElementById(el);
 }
-
 function pad(n) {
 	// console.log('pad '+n+' to 5 chars - starting from '+n.length);
 	var num=n;
@@ -10,9 +8,7 @@ function pad(n) {
 	for(var i=0;i<a;i++) num='&nbsp;'+num;
 	return num;
 }
-
 'use strict';
-	
 // GLOBAL VARIABLES
 var scr={}; // screen size .w & .h and cursor coordinates .x & .y
 var db=null;
@@ -28,11 +24,8 @@ var overlay=null;
 var canvasL=0;
 var intervalX=0;
 var intervalY=0;
-var lastSave=-1;
 var months="JanFebMarAprMayJunJulAugSepOctNovDec";
-
 // EVENT LISTENERS
-
 // DRAG TO GO BACK
 id('main').addEventListener('touchstart', function(event) {
     // console.log(event.changedTouches.length+" touches");
@@ -40,13 +33,11 @@ id('main').addEventListener('touchstart', function(event) {
     dragStart.y=event.changedTouches[0].clientY;
     // console.log('start drag at '+dragStart.x+','+dragStart.y+' view is '+view);
 })
-
 id('main').addEventListener('touchmove', function(event) {
 	var x=event.changedTouches[0].clientX-dragStart.x;
 	x+=canvasL;
 	id('graphPanel').style.left=x+'px';
 })
-
 id('main').addEventListener('touchend', function(event) {
     var drag={};
     drag.x=dragStart.x-event.changedTouches[0].clientX;
@@ -75,11 +66,9 @@ id('main').addEventListener('touchend', function(event) {
     		id('listPanel').style.display='block';
     		id('heading').style.display='block';
     		id('buttonNew').style.display='block';
-    		// populateList();
     	}
     }
 })
-
 id('graphOverlay').addEventListener('click',function(event) {
 	intvl=['month','quarter','year'];
 	// var x=event.clientX;
@@ -89,16 +78,13 @@ id('graphOverlay').addEventListener('click',function(event) {
 	if(event.clientY<80) console.log(intvl[x]);
 	drawGraph(intvl[x]);
 })
-
 // TAP ON HEADER
 id('heading').addEventListener('click',function() {toggleDialog('dataDialog',true);})
-
 // DISPLAY MESSAGE
 function display(message) {
 	id('message').innerText=message;
 	toggleDialog('messageDialog',true);
 }
-
 // NEW BUTTON
 id('buttonNew').addEventListener('click', function() { // show the log dialog
 	console.log("show add jotting dialog with today's date, 1 day duration, blank text field and delete button disabled");
@@ -115,7 +101,6 @@ id('buttonNew').addEventListener('click', function() { // show the log dialog
 	id("buttonDeleteLog").disabled=true;
 	id('buttonDeleteLog').style.color='gray';
 });
-
 // SAVE NEW/EDITED LOG
 id('buttonSaveLog').addEventListener('click', function() {
 	log.date=id('logDate').value;
@@ -148,12 +133,6 @@ id('buttonSaveLog').addEventListener('click', function() {
 		request.onerror = function(event) {console.log("error updating log "+log.id);};
 	}
 });
-
-/* CANCEL NEW/EDIT LOG
-id('buttonCancelLog').addEventListener('click', function() {
-    toggleDialog('logDialog',false); // close add new jotting dialog
-});
-*/
 // DELETE LOG
 id('buttonDeleteLog').addEventListener('click', function() {
 	var text=log.text; // initiate delete log
@@ -162,7 +141,6 @@ id('buttonDeleteLog').addEventListener('click', function() {
 	id('deleteText').innerHTML=text;
 	toggleDialog("logDialog", false);
 });
-
 // CONFIRM DELETE
 id('buttonDeleteConfirm').addEventListener('click', function() {
 	console.log("delete log "+logIndex+" - "+log.text); // confirm delete log
@@ -178,12 +156,6 @@ id('buttonDeleteConfirm').addEventListener('click', function() {
 	request.onerror=function(event) {console.log("error deleting log "+log.id);};
 	toggleDialog('deleteDialog', false);
 });
-
-/* CANCEL DELETE
-id('buttonCancelDelete').addEventListener('click', function() {
-    toggleDialog('deleteDialog', false); // close delete dialog
-});
-*/
 // SHOW/HIDE DIALOGS
 function  toggleDialog(d, visible) {
     console.log('toggle '+d+' - '+visible);
@@ -192,39 +164,7 @@ function  toggleDialog(d, visible) {
     	currentDialog=d;
     	id(d).style.display='block';
     }
-    /*
-  	id('buttonNew').style.display=(visible)?'none':'block';
-	if(d=='logDialog') { // toggle log dialog
-	    if (visible) {
-      		id("logDialog").style.display='block';
-    	} else {
-      		id("logDialog").style.display='none';
-    	}
-	}
-	else if(d=='deleteDialog') { // toggle DELETE dialog
-	  	if(visible) {
-      		id('deleteDialog').style.display='block';
-   		} else {
-     		id('deleteDialog').style.display='none';
-    	}
-	}
-	else if(d=='importDialog') { // toggle file chooser dialog
-	  	if(visible) {
-      		id('importDialog').style.display='block';
-    	} else {
-      		id('importDialog').style.display='none';
-    	}
-	}
-	else if(d=='dataDialog') { // toggle file chooser dialog
-	  	if(visible) {
-      		id('dataDialog').style.display='block';
-    	} else {
-      		id('dataDialog').style.display='none';
-    	}
-	}
-	*/
 }
-
 // OPEN SELECTED LOG FOR EDITING
 function openLog() {
 	console.log("open log: "+logIndex);
@@ -239,7 +179,6 @@ function openLog() {
 	id('buttonDeleteLog').disabled=false;
 	id('buttonDeleteLog').style.color='red';
 }
-  
 // POPULATE LOGS LIST
 function populateList() {
 	console.log("populate log list");
@@ -258,7 +197,7 @@ function populateList() {
 		else {
 			console.log("list "+logs.length+" logs");
 			logs.sort(function(a,b) { return Date.parse(a.date)-Date.parse(b.date)}); // date order
-			console.log("populate list");
+			console.log("populate list with "+logs.length+' logs');
 			id('list').innerHTML=""; // clear list
 			var html="";
 			var d="";
@@ -278,15 +217,12 @@ function populateList() {
 				listItem.appendChild(itemText);
 		  		id('list').appendChild(listItem);
   			}
-	        var thisMonth=new Date().getMonth();
-	        if(thisMonth!=lastSave) backup(); // monthly backups
   		}
 	}
 	request.onerror=function(event) {
 		console.log("cursor request failed");
 	}
 }
-
 // DRAW GRAPH
 function drawGraph(interval) {
 	if(interval==null) interval='month'; // interval can be month (default), quarter or year
@@ -561,8 +497,14 @@ function selectLog() {
 // DATA
 id('backupButton').addEventListener('click',function() {toggleDialog('dataDialog',false); backup();});
 id('importButton').addEventListener('click',function() {toggleDialog('importDialog',true)});
-/* id('dataCancelButton').addEventListener('click',function() {toggleDialog('dataDialog',false)}); */
-
+// UPDATE LOG STORE
+function saveData() {
+	console.log('save '+logs.length+' logs');
+	var data=JSON.stringify(logs);
+	console.log('log data: '+data);
+	window.localStorage.setItem('logs',data);
+	console.log('logs store updated');
+}
 // IMPORT FILE
 id("fileChooser").addEventListener('change',function() {
     var file=id('fileChooser').files[0];
@@ -607,7 +549,6 @@ id('cancelImport').addEventListener('click',function() {
     console.log('cancel import');
     toggleDialog('importDialog', false);
 });
-
 // BACKUP
 function backup() {
   	console.log("save backup");
@@ -646,13 +587,9 @@ function backup() {
     		document.body.appendChild(a);
     		a.click();
 			display(fileName+" saved to downloads folder");
-			var today=new Date();
-			lastSave=today.getMonth();
-			window.localStorage.setItem('LevelsSave',lastSave); // remember month of backup
 		}
 	}
 }
-
 // START-UP CODE
 scr.w=screen.width;
 scr.h=screen.height;
@@ -667,8 +604,6 @@ id("overlay").width=scr.w;
 id("overlay").height=scr.h;
 canvas=id('canvas').getContext('2d');
 overlay=id('overlay').getContext('2d');
-lastSave=window.localStorage.getItem('LevelsSave'); // get month of last backup
-console.log('lastSave: '+lastSave);
 var request=window.indexedDB.open("LevelsDB",2);
 request.onsuccess=function(event) {
     db=event.target.result;
@@ -679,7 +614,18 @@ request.onsuccess=function(event) {
     request.onsuccess = function(event) {  
 	    var cursor=event.target.result;  
         if (cursor) {
-		    logs.push(cursor.value);
+        	
+        	// NEW LOG DATA
+        	log={};
+        	log.date=cursor.value.date;
+        	log.grid=cursor.value.grid;
+        	log.pvA=cursor.value.pv;
+        	log.pvB=cursor.value.pvB;
+        	log.yield=cursor.value.yield;
+        	log.cons=cursor.value.cons;
+        	logs.push(log);
+		    // logs.push(cursor.value);
+		    
 	    	cursor.continue();  
         }
 	    else {
@@ -690,6 +636,10 @@ request.onsuccess=function(event) {
 		        return
 		    }
 		    logs.sort(function(a,b) { return Date.parse(a.date)-Date.parse(b.date)}); // date order
+		    
+		    // CREATE NEW DATA STORE
+		    saveData();
+		    
 		    populateList();
 	    }
     };
