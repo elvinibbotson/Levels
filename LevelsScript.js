@@ -4,14 +4,14 @@ function id(el) {
 function pad(n) {
 	// console.log('pad '+n+' to 5 chars - starting from '+n.length);
 	var num=n;
-	var a=5-num.length;
-	for(var i=0;i<a;i++) num='&nbsp;'+num;
+	// console.log('n: '+n+' ('+n.length+' chars)');
+	while(num.length<5) num='&nbsp;'+num;
 	return num;
 }
 'use strict';
 // GLOBAL VARIABLES
 var scr={}; // screen size .w & .h and cursor coordinates .x & .y
-var db=null;
+// var db=null;
 var logs=[];
 var log=null;
 var logIndex=null;
@@ -97,7 +97,6 @@ id('buttonNew').addEventListener('click', function() { // show the log dialog
 	id('logYield').value=null;
 	id('logCons').value=null;
 	log={};
-	logIndex=null;
 	id("buttonDeleteLog").disabled=true;
 	id('buttonDeleteLog').style.color='gray';
 });
@@ -105,12 +104,16 @@ id('buttonNew').addEventListener('click', function() { // show the log dialog
 id('buttonSaveLog').addEventListener('click', function() {
 	log.date=id('logDate').value;
 	log.grid=id('logGrid').value;
-	log.pv=id('logPVa').value;
+	log.pvA=id('logPVa').value;
 	log.pvB=id('logPVb').value;
 	log.yield=id('logYield').value;
 	log.cons=id('logCons').value;
     toggleDialog('logDialog',false);
 	console.log("save log - date: "+log.date);
+	logs.push(log);
+	saveData();
+	populateList();
+	/* OLD CODE...
 	var dbTransaction=db.transaction('logs',"readwrite");
 	console.log("indexedDB transaction ready");
 	var dbObjectStore=dbTransaction.objectStore('logs');
@@ -132,18 +135,25 @@ id('buttonSaveLog').addEventListener('click', function() {
 		};
 		request.onerror = function(event) {console.log("error updating log "+log.id);};
 	}
+	*/
 });
 // DELETE LOG
 id('buttonDeleteLog').addEventListener('click', function() {
-	var text=log.text; // initiate delete log
-	console.log("delete log "+text);
+	var text=log.date; // initiate delete log
+	console.log("delete log date "+text+' show confirm dialog');
+	// toggleDialog("logDialog", false);
 	toggleDialog("deleteDialog", true);
 	id('deleteText').innerHTML=text;
-	toggleDialog("logDialog", false);
 });
 // CONFIRM DELETE
 id('buttonDeleteConfirm').addEventListener('click', function() {
-	console.log("delete log "+logIndex+" - "+log.text); // confirm delete log
+	console.log("delete log - "+logIndex); // confirm delete log
+	// NEW CODE...
+	console.log('date: '+log.date);
+	logs.splice(logIndex,1);
+	saveData();
+	populateList();
+	/* OLD CODE...
 	var dbTransaction=db.transaction("logs","readwrite");
 	console.log("indexedDB transaction ready");
 	var dbObjectStore=dbTransaction.objectStore("logs");
@@ -154,6 +164,7 @@ id('buttonDeleteConfirm').addEventListener('click', function() {
 		populateList();
 	};
 	request.onerror=function(event) {console.log("error deleting log "+log.id);};
+	*/
 	toggleDialog('deleteDialog', false);
 });
 // SHOW/HIDE DIALOGS
@@ -169,11 +180,12 @@ function  toggleDialog(d, visible) {
 function openLog() {
 	console.log("open log: "+logIndex);
 	log=logs[logIndex];
+	console.log('log date: '+log.date);
 	toggleDialog('logDialog',true);
 	id('logDate').value=log.date;
 	id('logGrid').value=log.grid;
-	id('logPV').value=log.pv;
-	id('logSolar').value=log.solar;
+	id('logPVa').value=log.pvA;
+	id('logPVb').value=log.pbB;
 	id('logYield').value=log.yield;
 	id('logCons').value=log.cons;
 	id('buttonDeleteLog').disabled=false;
@@ -183,6 +195,31 @@ function openLog() {
 function populateList() {
 	console.log("populate log list");
 	logs=[];
+	var data=window.localStorage.getItem('logs');
+	logs=JSON.parse(data);
+	logs.sort(function(a,b) { return Date.parse(a.date)-Date.parse(b.date)}); // date order
+	console.log("populate list with "+logs.length+' logs');
+	id('list').innerHTML=""; // clear list
+	var html="";
+	var d="";
+	var mon=0;
+  	for(var i=logs.length-1; i>=0; i--) { // list latest first
+  		console.log('log '+i+': '+logs[i].grid+'kWh');
+  		var listItem=document.createElement('li');
+		listItem.index=i;
+	 	listItem.classList.add('log-item');
+		listItem.addEventListener('click', function(){logIndex=this.index; openLog();});
+		var itemText=document.createElement('span');
+		d=logs[i].date;
+		mon=parseInt(d.substr(5,2))-1;
+		mon*=3;
+		d=months.substr(mon,3)+" "+d.substr(2,2);
+		html='<span class="grey">'+d+'</span><span class="red">'+pad(logs[i].grid)+'</span><span class="green">'+pad(logs[i].pvA)+'</span><span class="yellow">'+pad(logs[i].pvB)+'</span><span class="blue">'+pad(logs[i].yield)+'</span><span class="orange">'+pad(logs[i].cons)+'</span>';
+		itemText.innerHTML=html;
+		listItem.appendChild(itemText);
+		id('list').appendChild(listItem);
+  	}
+	/* OLD CODE...
 	var dbTransaction=db.transaction('logs',"readwrite");
 	console.log("indexedDB transaction ready");
 	var dbObjectStore=dbTransaction.objectStore('logs');
@@ -222,30 +259,16 @@ function populateList() {
 	request.onerror=function(event) {
 		console.log("cursor request failed");
 	}
+	*/
 }
 // DRAW GRAPH
-function drawGraph(interval) {
-	if(interval==null) interval='month'; // interval can be month (default), quarter or year
-	console.log('GRAPH - interval is '+interval);
-	var letters='';
+function drawGraph() {
+	var letters='JFMAMJJASOND';
 	var n=0;
 	var margin=90; // bottom margin to allow space for Android controls
-	var intervalV=0; // kWh interval for horizontal gridlines
-	if(interval=='month') {
-		n=logs.length-1;
-		intervalV=100; // grid lines at 100kWh intervals
-		letters='JFMAMJJASOND';
-	}
-	else if(interval=='quarter') {
-		n=Math.floor(logs.length/3)-1;
-		intervalV=250; // grid lines at 250kWh intervals
-		letters="4123";
-	}
-	else {
-		n=Math.floor(logs.length/12)-1;
-		intervalV=1000; // grid lines at 1000kWh intervals (no letters)
-	}
-	console.log('graph spans '+n+' intervals');
+	var intervalV=100; // 100kWh interval for horizontal gridlines
+	n=logs.length-1;
+	console.log('graph spans '+n+' months');
 	canvasL=(14-n)*intervalX;
 	id('graphPanel').style.left=canvasL+'px';
 	id("graphPanel").style.width=(n*intervalX+10)+'px';
@@ -255,10 +278,8 @@ function drawGraph(interval) {
 	// clear canvases
 	overlay.clearRect(0,0,scr.w,scr.h);
 	canvas.clearRect(0,0,id('canvas').width+10,scr.h);
-	// draw interval tabs
 	overlay.fillStyle='black';
-	overlay.fillRect(0,0,scr.w,48); // black background
-	// then draw legend
+	overlay.fillRect(0,0,scr.w,24); // header - black background
 	overlay.font='20px Monospace';
 	overlay.fillStyle='hotpink';
 	overlay.fillText('grid',25,20);
@@ -271,19 +292,6 @@ function drawGraph(interval) {
 	overlay.fillStyle='orange';
 	overlay.fillText('ASHP',300,20);
 	overlay.lineWidth=1;
-	overlay.fillStyle='#333'; // draw 3 dark (background) tabs
-	overlay.fillRect(5,24,scr.w/3-10,24);
-	overlay.fillRect(scr.w/3+5,24,scr.w/3-10,24);
-	overlay.fillRect(2*scr.w/3+5,24,scr.w/3-10,24);
-	overlay.fillStyle='dimgray'; // draw gray foreground tab for current interval
-	console.log('interval: '+interval);
-	if(interval=='month') overlay.fillRect(5,24,scr.w/3-10,24);
-	else if(interval=='quarter') overlay.fillRect(scr.w/3+5,24,scr.w/3-10,24);
-	else overlay.fillRect(2*scr.w/3+5,24,scr.w/3-10,24);
-	overlay.fillStyle='white'; // label tabs
-	overlay.fillText('month',20,46);
-	overlay.fillText('quarter',scr.w/3+20,46);
-	overlay.fillText('year',2*scr.w/3+20,46);
 	// draw horizontal gridlines and kWh labels on overlay
 	for(i=1;i<10;i++) overlay.fillText(i*intervalV,2,scr.h-margin-(i+1)*intervalY-5); // kWh at 100px intervals
 	overlay.fillText('kWh',2,scr.h-margin-11*intervalY+20); // vertical axis label
@@ -303,29 +311,6 @@ function drawGraph(interval) {
 	var startLog=1; // defaults to second log (for month intervals)
 	var mon=-1;
 	var step=1;
-	if(interval=='quarter') {
-		while(mon%3!=0) {
-			startLog++;
-			mon=parseInt(logs[startLog].date.substr(5,2));
-			console.log('log '+startLog+' month: '+mon+' '+letters[m]);
-			// startLog++;
-		}
-		step=3; // 3-month steps
-		startLog+=step;
-		console.log('quarterly intervals - start at log '+startLog+' step '+step);
-	}
-	else if(interval=='year') {
-		while(mon%12!=0) {
-			mon=parseInt(logs[startLog].date.substr(5,2));
-			console.log('log '+startLog+' month: '+mon);
-			startLog++;
-		}
-		step=12; // 12-month steps
-		startLog+=step;
-		console.log('yearly intervals - start at log '+startLog+' step '+step);
-	}
-	else console.log('monthly intervals - start at log '+startLog+' step '+step);
-	// draw vertical gridlines and interval labels on canvas
 	canvas.strokeStyle='silver'; // grey lines
 	canvas.font='20px Monospace';
 	canvas.fillStyle='white'; // white text
@@ -339,35 +324,13 @@ function drawGraph(interval) {
 		x=Math.floor(i/step)*intervalX;
 		canvas.moveTo(x,scr.h-margin);
 		canvas.lineTo(x,scr.h-margin-11*intervalY); // vertical gridline
-		if(interval=='month') {
-			m=parseInt(logs[i].date.substr(5,2))-1;
-			canvas.fillText(letters.charAt(m),x-5,scr.h-margin-11*intervalY-5); // month letter just above and below grid
-			canvas.fillText(letters.charAt(m),x-5,scr.h-margin-intervalY-5);
-			if(m<1) {
+		m=parseInt(logs[i].date.substr(5,2))-1;
+		canvas.fillText(letters.charAt(m),x-5,scr.h-margin-11*intervalY-5); // month letter just above and below grid
+		canvas.fillText(letters.charAt(m),x-5,scr.h-margin-intervalY-5);
+		if(m<1) {
 				year=logs[i].date.substr(0,4);
 				canvas.fillText(year,x,scr.h-margin-11*intervalY-24); // YYYY above month labels
 			}
-		}
-		else if(interval=='quarter') {
-			m=parseInt(logs[i].date.substr(5,2));
-			console.log('month: '+m);
-			m/=3; // 1,2,3,4
-			m%=4; // 1,2,3,0
-			console.log('quarter: '+letters.charAt(m)+': '+letters[m]);
-			canvas.fillText(letters.charAt(m),x-5,scr.h-margin-11*intervalY-5); // quarter symbol just above and below grid
-			canvas.fillText(letters.charAt(m),x-5,scr.h-margin-5);
-			if(m<1) {
-				year=logs[i].date.substr(0,4);
-				year++; // start of following year
-				canvas.fillText(year,x-5,scr.h-margin-11*intervalY-24); // YYYY above month labels
-			}
-		}
-		else {
-			year=logs[i].date.substr(2,2); // YY just above and below grid
-			console.log('year: '+year);
-			canvas.fillText(year,x-5,scr.h-margin-11*intervalY-5); // quarter symbol just above and below grid
-			canvas.fillText(year,x-5,scr.h-margin-5);
-		}
 		i+=step;
 	}
 	canvas.stroke();
@@ -483,17 +446,14 @@ function drawGraph(interval) {
     canvas.fill();
     overlay.fillText('COP',5,scr.h-margin-intervalY+20);
 }
-
 function selectLog() {
 	if(currentLog) currentLog.children[0].style.backgroundColor='gray'; // deselect any previously selected item
     itemIndex=parseInt(logIndex);
 	log=logs[logIndex];
 	console.log("selected item: "+logIndex);
 	currentLog=id('list').children[logIndex];
-	// currentLog.children[0].style.backgroundColor='black'; // highlight new selection
 	currentLog.style.backgroundColor='black'; // highlight new selection
 }
-
 // DATA
 id('backupButton').addEventListener('click',function() {toggleDialog('dataDialog',false); backup();});
 id('importButton').addEventListener('click',function() {toggleDialog('importDialog',true)});
@@ -504,7 +464,7 @@ function saveData() {
 	console.log('log data: '+data);
 	window.localStorage.setItem('logs',data);
 	console.log('logs store updated');
-	alert(logs.length+' logs saved');
+	// alert(logs.length+' logs saved');
 }
 // IMPORT FILE
 id("fileChooser").addEventListener('change',function() {
@@ -516,10 +476,11 @@ id('confirmImport').addEventListener('click',function(event) {
     fileReader.onload=function() {
     	var data=fileReader.result;
     	console.log('file read');
-    	var json=JSON.parse(data);
-    	console.log("json: "+json);
-    	var logs=json.logs;
+    	var logs=JSON.parse(data);
     	console.log(logs.length+" logs loaded");
+    	// NEW CODE...
+    	saveData();
+    	/* OLD CODE...
     	var dbTransaction=db.transaction('logs',"readwrite");
     	console.log('database ready - save '+logs.length+' logs');
     	var dbObjectStore=dbTransaction.objectStore('logs');
@@ -540,6 +501,7 @@ id('confirmImport').addEventListener('click',function(event) {
     		toggleDialog('importDialog',false);
     		display("logs imported - restart");
     	}
+    	*/
     }
     fileReader.onerror=function() {
     	alert('read error: '+fileReader.error);
@@ -553,13 +515,20 @@ id('cancelImport').addEventListener('click',function() {
 // BACKUP
 function backup() {
   	console.log("save backup");
-  	var fileName="Levels-";
-	var date=new Date();
-	fileName+=date.getFullYear()+'-';
-	if(date.getMonth()<9) fileName+='0'; // date format YYYYMMDD
-	fileName+=(date.getMonth()+1)+'-';
-	if(date.getDate()<10) fileName+='0';
-	fileName+=date.getDate()+".json";
+  	var fileName="LevelsData.json";
+  	// NEW CODE...
+  	var json=JSON.stringify(logs);
+	var blob=new Blob([json],{type:"data:application/json"});
+  	var a=document.createElement('a');
+	a.style.display='none';
+    var url=window.URL.createObjectURL(blob);
+	console.log("data ready to save: "+blob.size+" bytes");
+   	a.href=url;
+   	a.download=fileName;
+    document.body.appendChild(a);
+    a.click();
+	display(fileName+" saved to downloads folder");
+  	/* OLD CODE...
 	var dbTransaction=db.transaction('logs',"readwrite");
 	console.log("indexedDB transaction ready");
 	var dbObjectStore=dbTransaction.objectStore('logs');
@@ -590,6 +559,7 @@ function backup() {
 			display(fileName+" saved to downloads folder");
 		}
 	}
+	*/
 }
 // START-UP CODE
 scr.w=screen.width;
@@ -605,6 +575,9 @@ id("overlay").width=scr.w;
 id("overlay").height=scr.h;
 canvas=id('canvas').getContext('2d');
 overlay=id('overlay').getContext('2d');
+// NEW CODE...
+populateList();
+/* OLD CODE...
 var request=window.indexedDB.open("LevelsDB",2);
 request.onsuccess=function(event) {
     db=event.target.result;
@@ -656,6 +629,7 @@ request.onupgradeneeded=function(event) {
 request.onerror=function(event) {
 	alert("indexedDB error");
 };
+*/
 // implement service worker if browser is PWA friendly 
 if (navigator.serviceWorker.controller) {
 	console.log('Active service worker found, no need to register')
