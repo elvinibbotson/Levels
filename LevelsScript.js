@@ -106,58 +106,21 @@ id('buttonSaveLog').addEventListener('click', function() {
 	logs.push(log);
 	saveData();
 	populateList();
-	/* OLD CODE...
-	var dbTransaction=db.transaction('logs',"readwrite");
-	console.log("indexedDB transaction ready");
-	var dbObjectStore=dbTransaction.objectStore('logs');
-	console.log("indexedDB objectStore ready");
-	console.log("save log - logIndex is "+logIndex);
-	if(logIndex===null) { // add new log
-		var request=dbObjectStore.add(log);
-		request.onsuccess=function(event) {
-			console.log("new log added: "+log.text);
-			populateList();
-		};
-		request.onerror=function(event) {console.log("error adding new log");};
-	}
-	else { // update existing log
-		request=dbObjectStore.put(log); // update log in database
-		request.onsuccess=function(event)  {
-			console.log("log "+log.id+" updated");
-			populateList();
-		};
-		request.onerror = function(event) {console.log("error updating log "+log.id);};
-	}
-	*/
 });
 // DELETE LOG
 id('buttonDeleteLog').addEventListener('click', function() {
 	var text=log.date; // initiate delete log
 	console.log("delete log date "+text+' show confirm dialog');
-	// toggleDialog("logDialog", false);
 	toggleDialog("deleteDialog", true);
 	id('deleteText').innerHTML=text;
 });
 // CONFIRM DELETE
 id('buttonDeleteConfirm').addEventListener('click', function() {
 	console.log("delete log - "+logIndex); // confirm delete log
-	// NEW CODE...
 	console.log('date: '+log.date);
 	logs.splice(logIndex,1);
 	saveData();
 	populateList();
-	/* OLD CODE...
-	var dbTransaction=db.transaction("logs","readwrite");
-	console.log("indexedDB transaction ready");
-	var dbObjectStore=dbTransaction.objectStore("logs");
-	var request=dbObjectStore.delete(log.id);
-	request.onsuccess=function(event) {
-		console.log("log "+log.id+" deleted");
-		logs.splice(logIndex,1); // not needed - rebuilding logs anyway
-		populateList();
-	};
-	request.onerror=function(event) {console.log("error deleting log "+log.id);};
-	*/
 	toggleDialog('deleteDialog', false);
 });
 // SHOW/HIDE DIALOGS
@@ -212,47 +175,6 @@ function populateList() {
 		listItem.appendChild(itemText);
 		id('list').appendChild(listItem);
   	}
-	/* OLD CODE...
-	var dbTransaction=db.transaction('logs',"readwrite");
-	console.log("indexedDB transaction ready");
-	var dbObjectStore=dbTransaction.objectStore('logs');
-	console.log("indexedDB objectStore ready");
-	var request=dbObjectStore.openCursor();
-	request.onsuccess=function(event) {  
-		var cursor=event.target.result;  
-    	if(cursor) {
-			logs.push(cursor.value);
-			cursor.continue();
-    	}
-		else {
-			console.log("list "+logs.length+" logs");
-			logs.sort(function(a,b) { return Date.parse(a.date)-Date.parse(b.date)}); // date order
-			console.log("populate list with "+logs.length+' logs');
-			id('list').innerHTML=""; // clear list
-			var html="";
-			var d="";
-			var mon=0;
-  			for(var i=logs.length-1; i>=0; i--) { // list latest first
-  			 	var listItem=document.createElement('li');
-				listItem.index=i;
-	 		 	listItem.classList.add('log-item');
-				listItem.addEventListener('click', function(){logIndex=this.index; openLog();});
-				var itemText=document.createElement('span');
-				d=logs[i].date;
-				mon=parseInt(d.substr(5,2))-1;
-				mon*=3;
-				d=months.substr(mon,3)+" "+d.substr(2,2);
-				html='<span class="grey">'+d+'</span><span class="red">'+pad(logs[i].grid)+'</span><span class="green">'+pad(logs[i].pv)+'</span><span class="yellow">'+pad(logs[i].pvB)+'</span><span class="blue">'+pad(logs[i].yield)+'</span><span class="orange">'+pad(logs[i].cons)+'</span>';
-				itemText.innerHTML=html;
-				listItem.appendChild(itemText);
-		  		id('list').appendChild(listItem);
-  			}
-  		}
-	}
-	request.onerror=function(event) {
-		console.log("cursor request failed");
-	}
-	*/
 }
 // DRAW GRAPH
 function drawGraph() {
@@ -287,18 +209,13 @@ function drawGraph() {
 	background.fillText('ASHP',300,20);
 	background.lineWidth=1;
 	// draw horizontal gridlines and kWh labels on background
-	for(i=1;i<11;i++) background.fillText(i*intervalV,2,scr.h-margin-(i+1)*intervalY-5); // kWh at 100px intervals
-	background.fillText('kWh',2,scr.h-margin-12*intervalY+20); // vertical axis label
+	for(i=0;i<11;i++) background.fillText(i*intervalV,2,scr.h-margin-i*intervalY-5); // kWh at 100px intervals
+	background.fillText('kWh',2,scr.h-margin-11*intervalY+20); // vertical axis label
 	background.strokeStyle='silver'; // grey lines
 	background.beginPath();
-	for(i=1;i<13;i++) {
+	for(i=0;i<12;i++) {
 		background.moveTo(0,scr.h-margin-i*intervalY);
 		background.lineTo(scr.w,scr.h-margin-i*intervalY); // grey lines
-	}
-	// draw horizontal gridlines for COP graph
-	for(i=0;i<6;i++) {
-		background.moveTo(0,scr.h-margin-intervalY+i*intervalY/5);
-		background.lineTo(scr.w,scr.h-margin-intervalY+i*intervalY/5); // grey lines
 	}
 	background.stroke();
 	// DRAW GRAPHS
@@ -320,8 +237,8 @@ function drawGraph() {
 		canvas.moveTo(x,scr.h-margin);
 		canvas.lineTo(x,scr.h-margin-12*intervalY); // vertical gridline
 		m=parseInt(logs[i].date.substr(5,2))-1;
-		canvas.fillText(letters.charAt(m),x-5,scr.h-margin-12*intervalY-5); // month letter just above and below grid
-		canvas.fillText(letters.charAt(m),x-5,scr.h-margin-intervalY-5);
+		canvas.fillText(letters.charAt(m),x-5,scr.h-margin-11*intervalY-5); // month letter just above and below grid
+		canvas.fillText(letters.charAt(m),x-5,scr.h-margin-5);
 		if(m<1) {
 				year=logs[i].date.substr(0,4);
 				canvas.fillText(year,x,scr.h-margin-11*intervalY-24); // YYYY above month labels
@@ -342,7 +259,7 @@ function drawGraph() {
 		val=logs[i].grid-logs[i-step].grid; // kWh
 		val*=intervalY/intervalV; // convert kWh to pixels
 		x+=intervalX;
-		var y=scr.h-margin-intervalY-val;
+		var y=scr.h-margin-val;
 		if(i==startLog) canvas.moveTo(x,y);
 		else canvas.lineTo(x,y);
 		i+=step;
@@ -359,7 +276,7 @@ function drawGraph() {
 		val=logs[i].pvA-logs[i-step].pvA; // kWh
 		val*=intervalY/intervalV; // convert kWh to pixels
 		x+=intervalX
-		var y=scr.h-margin-intervalY-val;
+		var y=scr.h-margin-val;
 		if(i==startLog) canvas.moveTo(x,y);
 		else canvas.lineTo(x,y);
 		i+=step;
@@ -376,7 +293,7 @@ function drawGraph() {
     	val=logs[i].pvB-logs[i-step].pvB; // kWh
 		val*=intervalY/intervalV; // convert kWh to pixels
 		x+=intervalX;
-		var y=scr.h-margin-intervalY-val;
+		var y=scr.h-margin-val;
 		if(i==startLog) canvas.moveTo(x,y);
 		else canvas.lineTo(x,y);
 		i+=step;
@@ -393,7 +310,7 @@ function drawGraph() {
 		val=logs[i].yield-logs[i-step].yield; // kWh
 		val*=intervalY/intervalV; // convert kWh to pixels
 		x+=intervalX;
-		var y=scr.h-margin-intervalY-val;
+		var y=scr.h-margin-val;
 		if(i==startLog) canvas.moveTo(x,y);
 		else canvas.lineTo(x,y);
 		i+=step;
@@ -409,37 +326,12 @@ function drawGraph() {
     	val=logs[i].cons-logs[i-step].cons; // kWh
 		val*=intervalY/intervalV; // convert kWh to pixels
 		x+=intervalX;
-		var y=scr.h-margin-intervalY-val;
+		var y=scr.h-margin-val;
 		if(i==startLog) canvas.moveTo(x,y);
 		else canvas.lineTo(x,y);
 		i+=step;
     }
 	canvas.stroke();
-	// COP graph...
-	canvas.fillStyle='black'; // black background
-	canvas.fillRect(0,scr.h-margin-intervalY,id('canvas').width+10,intervalY);
-	canvas.fillStyle='white';
-	canvas.strokeWidth=0;
-	canvas.beginPath();
-	i=startLog;
-    x=(Math.floor(i/step)-1)*intervalX;
-    canvas.moveTo(0,scr.h-margin);
-    while(i<logs.length) {
-    	val=(logs[i].yield-logs[i-step].yield)/(logs[i].cons-logs[i-step].cons); // COP ratio
-    	// console.log('******* COP: '+val);
-		val*=intervalY/5; // convert kWh to pixels
-		// console.log('******* '+val+' pixels');
-		x+=intervalX;
-		var y=scr.h-margin-val;
-		// if(i==startLog) canvas.moveTo(x,y);
-		// else 
-		canvas.lineTo(x,y);
-		i+=step;
-    }
-    canvas.lineTo(x,scr.h-margin);
-    canvas.closePath();
-    canvas.fill();
-    background.fillText('COP',5,scr.h-margin-intervalY+20);
 }
 function selectLog() {
 	if(currentLog) currentLog.children[0].style.backgroundColor='gray'; // deselect any previously selected item
@@ -459,7 +351,6 @@ function saveData() {
 	console.log('log data: '+data);
 	window.localStorage.setItem('logs',data);
 	console.log('logs store updated');
-	// alert(logs.length+' logs saved');
 }
 // IMPORT FILE
 id("fileChooser").addEventListener('change',function() {
@@ -473,30 +364,7 @@ id('confirmImport').addEventListener('click',function(event) {
     	console.log('file read');
     	var logs=JSON.parse(data);
     	console.log(logs.length+" logs loaded");
-    	// NEW CODE...
     	saveData();
-    	/* OLD CODE...
-    	var dbTransaction=db.transaction('logs',"readwrite");
-    	console.log('database ready - save '+logs.length+' logs');
-    	var dbObjectStore=dbTransaction.objectStore('logs');
-    	for(var i=0;i<logs.length;i++) {
-    		console.log("add log "+i);
-    		// deal with legacy 'solar' values (thermal solar)
-    		if(logs[i].solar) {
-    			logs[i].pvB=0;
-    			logs[i].solar=null;
-    		}
-    		var request = dbObjectStore.add(logs[i]);
-    		request.onsuccess = function(e) {
-    			console.log("log "+i+" added");
-    		};
-    		request.onerror = function(e) {console.log("error adding log");};
-    	}
-    	dbTransaction.oncomplete=function(e) {
-    		toggleDialog('importDialog',false);
-    		display("logs imported - restart");
-    	}
-    	*/
     }
     fileReader.onerror=function() {
     	alert('read error: '+fileReader.error);
@@ -523,38 +391,6 @@ function backup() {
     document.body.appendChild(a);
     a.click();
 	display(fileName+" saved to downloads folder");
-  	/* OLD CODE...
-	var dbTransaction=db.transaction('logs',"readwrite");
-	console.log("indexedDB transaction ready");
-	var dbObjectStore=dbTransaction.objectStore('logs');
-	console.log("indexedDB objectStore ready");
-	var logs=[];
-	var request=dbObjectStore.openCursor();
-	request.onsuccess = function(event) {  
-		var cursor=event.target.result;  
-    	if(cursor) {
-		    logs.push(cursor.value);
-			console.log("log "+cursor.value.id+", date: "+cursor.value.date);
-			cursor.continue();  
-    	}
-		else {
-			console.log(logs.length+" logs - sort and save");
-    		logs.sort(function(a,b) { return Date.parse(a.date)-Date.parse(b.date)}); //chronological order
-			var data={'logs': logs};
-			var json=JSON.stringify(data);
-			var blob=new Blob([json],{type:"data:application/json"});
-  			var a=document.createElement('a');
-			a.style.display='none';
-    		var url=window.URL.createObjectURL(blob);
-			console.log("data ready to save: "+blob.size+" bytes");
-   			a.href=url;
-   			a.download=fileName;
-    		document.body.appendChild(a);
-    		a.click();
-			display(fileName+" saved to downloads folder");
-		}
-	}
-	*/
 }
 // START-UP CODE
 scr.w=screen.width;
@@ -571,61 +407,7 @@ id("background").width=scr.w;
 id("background").height=scr.h;
 canvas=id('canvas').getContext('2d');
 background=id('background').getContext('2d');
-// NEW CODE...
 populateList();
-/* OLD CODE...
-var request=window.indexedDB.open("LevelsDB",2);
-request.onsuccess=function(event) {
-    db=event.target.result;
-    var dbTransaction=db.transaction('logs',"readwrite");
-    var dbObjectStore=dbTransaction.objectStore('logs');
-    logs=[];
-    var request=dbObjectStore.openCursor();
-    request.onsuccess = function(event) {  
-	    var cursor=event.target.result;  
-        if (cursor) {
-        	
-        	// NEW LOG DATA
-        	log={};
-        	log.date=cursor.value.date;
-        	log.grid=cursor.value.grid;
-        	log.pvA=cursor.value.pv;
-        	log.pvB=cursor.value.pvB;
-        	log.yield=cursor.value.yield;
-        	log.cons=cursor.value.cons;
-        	logs.push(log);
-		    // logs.push(cursor.value);
-		    
-	    	cursor.continue();  
-        }
-	    else {
-		    console.log("No more entries!");
-		    console.log(logs.length+" logs");
-		    if(logs.length<1) { // no logs: offer to restore backup
-		        toggleDialog('importDialog',true);
-		        return
-		    }
-		    logs.sort(function(a,b) { return Date.parse(a.date)-Date.parse(b.date)}); // date order
-		    
-		    // CREATE NEW DATA STORE
-		    saveData();
-		    
-		    populateList();
-	    }
-    };
-};
-request.onupgradeneeded=function(event) {
-	db=event.target.result;
-	if (!db.objectStoreNames.contains('logs')) { // if there's no "logs" store..
-    	db.createObjectStore('logs', {keyPath: 'id',  autoIncrement: true}); // ..create it
-    	display('new logs object store created');
-	}
-	console.log("new logs ObjectStore created");
-};
-request.onerror=function(event) {
-	alert("indexedDB error");
-};
-*/
 // implement service worker if browser is PWA friendly 
 if (navigator.serviceWorker.controller) {
 	console.log('Active service worker found, no need to register')
