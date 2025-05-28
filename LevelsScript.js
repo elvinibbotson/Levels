@@ -153,6 +153,10 @@ function populateList() {
 	logs=[];
 	var data=window.localStorage.getItem('logs');
 	logs=JSON.parse(data);
+	if(!logs || logs.length<1) {
+		toggleDialog('dataDialog',true);
+		return;
+	}
 	logs.sort(function(a,b) { return Date.parse(a.date)-Date.parse(b.date)}); // date order
 	console.log("populate list with "+logs.length+' logs');
 	id('list').innerHTML=""; // clear list
@@ -355,25 +359,21 @@ function saveData() {
 // IMPORT FILE
 id("fileChooser").addEventListener('change',function() {
     var file=id('fileChooser').files[0];
-});
-id('confirmImport').addEventListener('click',function(event) {
-	var file=id('fileChooser').files[0];
-    var fileReader=new FileReader();
-    fileReader.onload=function() {
-    	var data=fileReader.result;
-    	console.log('file read');
-    	var logs=JSON.parse(data);
-    	console.log(logs.length+" logs loaded");
-    	saveData();
-    }
-    fileReader.onerror=function() {
-    	alert('read error: '+fileReader.error);
-    }
-    fileReader.readAsText(file);
-});
-id('cancelImport').addEventListener('click',function() {
-    console.log('cancel import');
-    toggleDialog('importDialog', false);
+    console.log("file: "+file+" name: "+file.name);
+	var fileReader=new FileReader();
+	fileReader.addEventListener('load', function(evt) {
+		console.log("file read: "+evt.target.result);
+	  	var data=evt.target.result;
+		logs=JSON.parse(data);
+		console.log(logs.length+' logs');
+		// logs=json.logs;
+		// console.log(logs.length+" logs loaded");
+		saveData();
+		console.log('data imported and saved');
+		toggleDialog('importDialog',false);
+		display("backup imported - restart");
+  	});
+  	fileReader.readAsText(file);
 });
 // BACKUP
 function backup() {

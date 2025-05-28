@@ -26,7 +26,6 @@ input {
 	background-color: dimgray;
 	border: none;
 }
-
 .text-button {
 	border: 2px solid white;
 	border-radius: 10px;
@@ -38,7 +37,6 @@ input {
 	background-color:gray;
 	float: right;
 }
-
 .round-button {
 	display: block;
 	position: fixed;
@@ -51,14 +49,12 @@ input {
 	background: gray;
 	z-index: 50;
 }
-
 .round-button img {
 	display: block;
 	width: 24px;
 	height: 24px;
 	padding: 13px;
 }
-
 .logList {
     margin: 0;
     list-style: none;
@@ -85,7 +81,7 @@ input {
 	border-radius: 10px;
 	color: white;
 	background-color: gray;
-	z-index: 10;
+	z-index: 15;
 	display: none;
 }
 .dialog > div {
@@ -163,7 +159,6 @@ input {
 	background-color: dimgray;
     background: url(okButton24px.svg) center center no-repeat;
 }
-
 .delete-button {
     width: 50px;
     height: 50px;
@@ -172,14 +167,12 @@ input {
 	background-color: dimgray;
 	background: url(deleteButton24px.svg) center center no-repeat;
 }
-
 #fileChooser {
 	width: 100%;
 	margin: 10px;
 	font-size: 1.5em;
 	background-color: gray;
 }
-
 #logDate {
 	width: 120px;
 	height: 34px;
@@ -198,7 +191,6 @@ input {
 	color: white;
 	background-color: black;
 	display='block';
-	z-index: 10;
 }
 #main {
 	position: fixed;

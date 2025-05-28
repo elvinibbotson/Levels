@@ -11,7 +11,7 @@
 </head>
 <body>
 <header>
-    <div id="heading"  class="header">
+    <div id="heading">
         <span class='grey'>end..</span><span class='red'>grid</span><span class='green'>pvA</span><span class='yellow'>pvB</span><span class='blue'>heat</span><span class='orange'>ASHP</span>
     </div>
 </header>
@@ -46,15 +46,12 @@
 	data
 	<button id='backupButton' class='text-button'>BACKUP</button>
 	<button id='importButton' class='text-button'>IMPORT</button>
-	<!--button id='dataCancelButton' class='text-button'>CANCEL</button-->
 </div>
 <div id="importDialog" class="dialog">
 	<div class="dialog-title">Load from file</div>
 	<input type="file" id="fileChooser">
-    <div class="dialog-buttons">
-    	<button id="confirmImport" class="save-button"></button>
-		<button id="cancelImport" class="cancel-button"></button>
-	</div>
+	<p>(replaces any existing data)<br>
+	or swipe left to start anew</p>
 </div>
 </div>
 <script src="LevelsScript.js" async></script>
