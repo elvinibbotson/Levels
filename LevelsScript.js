@@ -25,7 +25,7 @@ var canvasL=0;
 var intervalX=0;
 var intervalY=0;
 var months="JanFebMarAprMayJunJulAugSepOctNovDec";
-// EVENT LISTENERS
+var root; // OPFS root directory
 // DRAG TO GO BACK
 id('main').addEventListener('touchstart', function(event) {
     // console.log(event.changedTouches.length+" touches");
@@ -104,7 +104,7 @@ id('buttonSaveLog').addEventListener('click', function() {
     toggleDialog('logDialog',false);
 	console.log("save log - date: "+log.date);
 	logs.push(log);
-	saveData();
+	writeData(); // WAS saveData();
 	populateList();
 });
 // DELETE LOG
@@ -119,7 +119,7 @@ id('buttonDeleteConfirm').addEventListener('click', function() {
 	console.log("delete log - "+logIndex); // confirm delete log
 	console.log('date: '+log.date);
 	logs.splice(logIndex,1);
-	saveData();
+	writeData(); // WAS saveData();
 	populateList();
 	toggleDialog('deleteDialog', false);
 });
@@ -149,6 +149,7 @@ function openLog() {
 }
 // POPULATE LOGS LIST
 function populateList() {
+	/*
 	console.log("populate log list");
 	logs=[];
 	var data=window.localStorage.getItem('logs');
@@ -158,6 +159,7 @@ function populateList() {
 		return;
 	}
 	logs.sort(function(a,b) { return Date.parse(a.date)-Date.parse(b.date)}); // date order
+	*/
 	console.log("populate list with "+logs.length+' logs');
 	id('list').innerHTML=""; // clear list
 	var html="";
@@ -346,9 +348,39 @@ function selectLog() {
 	currentLog.style.backgroundColor='black'; // highlight new selection
 }
 // DATA
+async function readData() {
+	root=await navigator.storage.getDirectory();
+	console.log('OPFS root directory: '+root);
+	var persisted=await navigator.storage.persist();
+	console.log('persisted: '+persisted);
+	var handle=await root.getFileHandle('LevelsData');
+	var file=await handle.getFile();
+	console.log('file: '+file.name);
+	var loader=new FileReader();
+    loader.addEventListener('load',function(evt) {
+    	var data=evt.target.result;
+    	console.log('data: '+data.length+' bytes');
+    	logs=JSON.parse(data);
+      	console.log(logs.length+' logs read');
+      	logs.sort(function(a,b) {return Date.parse(a.date)-Date.parse(b.date)}); // date order
+		populateList();
+    });
+	loader.addEventListener('error',function(event) {
+    	alert('load failed - '+event);
+	});
+	loader.readAsText(file);
+}
+async function writeData() {
+	var handle=await root.getFileHandle('LevelsData',{create:true});
+	var data=JSON.stringify(logs);
+	var writable=await handle.createWritable();
+    await writable.write(data);
+    await writable.close();
+	console.log('data saved to LevelsData');
+}
 id('backupButton').addEventListener('click',function() {toggleDialog('dataDialog',false); backup();});
 id('importButton').addEventListener('click',function() {toggleDialog('importDialog',true)});
-// UPDATE LOG STORE
+/* UPDATE LOG STORE
 function saveData() {
 	console.log('save '+logs.length+' logs');
 	var data=JSON.stringify(logs);
@@ -356,6 +388,7 @@ function saveData() {
 	window.localStorage.setItem('logs',data);
 	console.log('logs store updated');
 }
+*/
 // IMPORT FILE
 id("fileChooser").addEventListener('change',function() {
     var file=id('fileChooser').files[0];
@@ -366,9 +399,7 @@ id("fileChooser").addEventListener('change',function() {
 	  	var data=evt.target.result;
 		logs=JSON.parse(data);
 		console.log(logs.length+' logs');
-		// logs=json.logs;
-		// console.log(logs.length+" logs loaded");
-		saveData();
+		writeData(); // WAS saveData();
 		console.log('data imported and saved');
 		toggleDialog('importDialog',false);
 		display("backup imported - restart");
@@ -379,7 +410,6 @@ id("fileChooser").addEventListener('change',function() {
 function backup() {
   	console.log("save backup");
   	var fileName="LevelsData.json";
-  	// NEW CODE...
   	var json=JSON.stringify(logs);
 	var blob=new Blob([json],{type:"data:application/json"});
   	var a=document.createElement('a');
@@ -407,7 +437,8 @@ id("background").width=scr.w;
 id("background").height=scr.h;
 canvas=id('canvas').getContext('2d');
 background=id('background').getContext('2d');
-populateList();
+readData();
+// populateList();
 // implement service worker if browser is PWA friendly 
 if (navigator.serviceWorker.controller) {
 	console.log('Active service worker found, no need to register')
