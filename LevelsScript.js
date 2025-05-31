@@ -80,8 +80,7 @@ function display(message) {
 }
 // NEW BUTTON
 id('buttonNew').addEventListener('click', function() { // show the log dialog
-	console.log("show add jotting dialog with today's date, 1 day duration, blank text field and delete button disabled");
-    toggleDialog('logDialog',true);
+	console.log("show add log dialog with today's date and delete button disabled");
 	var d=new Date().toISOString();
 	id('logDate').value=d.substr(0,10);
 	id('logGrid').value=null;
@@ -90,10 +89,30 @@ id('buttonNew').addEventListener('click', function() { // show the log dialog
 	id('logYield').value=null;
 	id('logCons').value=null;
 	log={};
-	id("buttonDeleteLog").disabled=true;
-	id('buttonDeleteLog').style.color='gray';
+	id("buttonDeleteLog").style.display='none';
+	// id("buttonDeleteLog").disabled=true;
+	// id('buttonDeleteLog').style.color='gray';
+	id('buttonAddLog').style.display='block';
+	// id('button.addLog').disabled=false;
+	id('buttonSaveLog').style.display='none';
+	// id('button.saveLog').disabled=true;
+	toggleDialog('logDialog',true);
 });
-// SAVE NEW/EDITED LOG
+// ADD NEW LOG
+id('buttonAddLog').addEventListener('click',function() {
+	log.date=id('logDate').value;
+	log.grid=id('logGrid').value;
+	log.pvA=id('logPVa').value;
+	log.pvB=id('logPVb').value;
+	log.yield=id('logYield').value;
+	log.cons=id('logCons').value;
+    toggleDialog('logDialog',false);
+    console.log("add new log - date: "+log.date);
+	logs.push(log);
+	writeData();
+	populateList();
+})
+// SAVE EDITED LOG
 id('buttonSaveLog').addEventListener('click', function() {
 	log.date=id('logDate').value;
 	log.grid=id('logGrid').value;
@@ -103,7 +122,6 @@ id('buttonSaveLog').addEventListener('click', function() {
 	log.cons=id('logCons').value;
     toggleDialog('logDialog',false);
 	console.log("save log - date: "+log.date);
-	logs.push(log);
 	writeData(); // WAS saveData();
 	populateList();
 });
@@ -141,11 +159,16 @@ function openLog() {
 	id('logDate').value=log.date;
 	id('logGrid').value=log.grid;
 	id('logPVa').value=log.pvA;
-	id('logPVb').value=log.pbB;
+	id('logPVb').value=log.pvB;
 	id('logYield').value=log.yield;
 	id('logCons').value=log.cons;
-	id('buttonDeleteLog').disabled=false;
-	id('buttonDeleteLog').style.color='red';
+	id('buttonDeleteLog').style.display='block';
+	// id('buttonDeleteLog').disabled=false;
+	// id('buttonDeleteLog').style.color='red';
+	id('buttonAddLog').style.display='none';
+	// id('buttonAddLog').disabled=true;
+	id('buttonSaveLog').style.display='block';
+	// id('buttonSaveLog').disabled=false;
 }
 // POPULATE LOGS LIST
 function populateList() {
@@ -206,13 +229,13 @@ function drawGraph() {
 	background.fillStyle='hotpink';
 	background.fillText('grid',25,20);
 	background.fillStyle='lightgreen';
-	background.fillText('pvA',100,20);
+	background.fillText('PV',115,20);
 	background.fillStyle='yellow';
-	background.fillText('pvB',150,20);
-	background.fillStyle='skyblue';
-	background.fillText('heat',225,20);
+	// background.fillText('pvB',150,20);
+	// background.fillStyle='skyblue';
+	background.fillText('heat',205,20);
 	background.fillStyle='orange';
-	background.fillText('ASHP',300,20);
+	background.fillText('ASHP',295,20);
 	background.lineWidth=1;
 	// draw horizontal gridlines and kWh labels on background
 	for(i=0;i<11;i++) background.fillText(i*intervalV,2,scr.h-margin-i*intervalY-5); // kWh at 100px intervals
@@ -271,15 +294,15 @@ function drawGraph() {
 		i+=step;
 	}
     canvas.stroke();
-    // next draw PVa yield
-    console.log('PVa');
+    // next draw PV yield
+    console.log('PV');
     canvas.strokeStyle='lightgreen';
     canvas.setLineDash([]);
     canvas.beginPath();
     i=startLog;
     x=(Math.floor(i/step)-1)*intervalX;
     while(i<logs.length) {
-		val=logs[i].pvA-logs[i-step].pvA; // kWh
+		val=(logs[i].pvA-logs[i-step].pvA)+(logs[i].pvB-logs[i-step].pvB); // kWh
 		val*=intervalY/intervalV; // convert kWh to pixels
 		x+=intervalX
 		var y=scr.h-margin-val;
@@ -288,7 +311,8 @@ function drawGraph() {
 		i+=step;
 	}
 	canvas.stroke();
-	// PVb yield
+	/*
+	PVb yield
 	console.log('PVb');
 	canvas.strokeStyle='yellow';
 	canvas.setLineDash([]);
@@ -305,9 +329,10 @@ function drawGraph() {
 		i+=step;
     }
 	canvas.stroke();
+	*/
 	// heat pump yield...
 	console.log('yield');
-	canvas.strokeStyle='skyblue';
+	canvas.strokeStyle='yellow';
 	canvas.setLineDash([]);
     canvas.beginPath();
     i=startLog;
