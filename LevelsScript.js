@@ -25,7 +25,8 @@ var canvasL=0;
 var intervalX=0;
 var intervalY=0;
 var months="JanFebMarAprMayJunJulAugSepOctNovDec";
-var root; // OPFS root directory
+var backupDay;
+// var root; // OPFS root directory
 // DRAG TO GO BACK
 id('main').addEventListener('touchstart', function(event) {
     // console.log(event.changedTouches.length+" touches");
@@ -73,11 +74,12 @@ id('main').addEventListener('touchend', function(event) {
 })
 // TAP ON HEADER
 id('heading').addEventListener('click',function() {toggleDialog('dataDialog',true);})
-// DISPLAY MESSAGE
+/* DISPLAY MESSAGE
 function display(message) {
 	id('message').innerText=message;
 	toggleDialog('messageDialog',true);
 }
+*/
 // NEW BUTTON
 id('buttonNew').addEventListener('click', function() { // show the log dialog
 	console.log("show add log dialog with today's date and delete button disabled");
@@ -109,7 +111,7 @@ id('buttonAddLog').addEventListener('click',function() {
     toggleDialog('logDialog',false);
     console.log("add new log - date: "+log.date);
 	logs.push(log);
-	writeData();
+	save();
 	populateList();
 })
 // SAVE EDITED LOG
@@ -122,7 +124,7 @@ id('buttonSaveLog').addEventListener('click', function() {
 	log.cons=id('logCons').value;
     toggleDialog('logDialog',false);
 	console.log("save log - date: "+log.date);
-	writeData(); // WAS saveData();
+	save(); // WAS saveData();
 	populateList();
 });
 // DELETE LOG
@@ -137,7 +139,7 @@ id('buttonDeleteConfirm').addEventListener('click', function() {
 	console.log("delete log - "+logIndex); // confirm delete log
 	console.log('date: '+log.date);
 	logs.splice(logIndex,1);
-	writeData(); // WAS saveData();
+	save(); // WAS saveData();
 	populateList();
 	toggleDialog('deleteDialog', false);
 });
@@ -373,7 +375,26 @@ function selectLog() {
 	currentLog.style.backgroundColor='black'; // highlight new selection
 }
 // DATA
-async function readData() {
+function load() {
+	var data=localStorage.getItem('LevelsData');
+	if(!data) {
+		id('restoreMessage').innerText='no data - restore?';
+		toggleDialog('restoreDialog',true);
+		return;
+	}
+	console.log('data: '+data.length+' bytes');
+    logs=JSON.parse(data);
+    console.log(logs.length+' logs read');
+    logs.sort(function(a,b) {return Date.parse(a.date)-Date.parse(b.date)}); // date order
+	populateList();
+	var today=Math.floor(new Date().getTime()/86400000);
+	var days=today-backupDay;
+	if(days>15) days='ages';
+	if(days>4) { // backup reminder every 5 days
+		id('backupMessage').innerText=days+' since last backup';
+		toggleDialog('backupDialog',true);
+	}
+	/*
 	root=await navigator.storage.getDirectory();
 	console.log('OPFS root directory: '+root);
 	var persisted=await navigator.storage.persist();
@@ -394,17 +415,22 @@ async function readData() {
     	alert('load failed - '+event);
 	});
 	loader.readAsText(file);
+	*/
 }
-async function writeData() {
+function save() {
+	var data=JSON.stringify(logs);
+	window.localStorage.setItem('LevelsData',data);
+	/*
 	var handle=await root.getFileHandle('LevelsData',{create:true});
 	var data=JSON.stringify(logs);
 	var writable=await handle.createWritable();
     await writable.write(data);
     await writable.close();
+    */
 	console.log('data saved to LevelsData');
 }
 id('backupButton').addEventListener('click',function() {toggleDialog('dataDialog',false); backup();});
-id('importButton').addEventListener('click',function() {toggleDialog('importDialog',true)});
+id('restoreButton').addEventListener('click',function() {toggleDialog('restoreDialog',true)});
 /* UPDATE LOG STORE
 function saveData() {
 	console.log('save '+logs.length+' logs');
@@ -414,7 +440,6 @@ function saveData() {
 	console.log('logs store updated');
 }
 */
-// IMPORT FILE
 id("fileChooser").addEventListener('change',function() {
     var file=id('fileChooser').files[0];
     console.log("file: "+file+" name: "+file.name);
@@ -424,14 +449,14 @@ id("fileChooser").addEventListener('change',function() {
 	  	var data=evt.target.result;
 		logs=JSON.parse(data);
 		console.log(logs.length+' logs');
-		writeData(); // WAS saveData();
+		save(); // WAS saveData();
 		console.log('data imported and saved');
-		toggleDialog('importDialog',false);
-		display("backup imported - restart");
+		toggleDialog('restoreDialog',false);
+		load();
+		// display("backup imported - restart");
   	});
   	fileReader.readAsText(file);
 });
-// BACKUP
 function backup() {
   	console.log("save backup");
   	var fileName="LevelsData.json";
@@ -445,7 +470,7 @@ function backup() {
    	a.download=fileName;
     document.body.appendChild(a);
     a.click();
-	display(fileName+" saved to downloads folder");
+	// display(fileName+" saved to downloads folder");
 }
 // START-UP CODE
 scr.w=screen.width;
@@ -462,7 +487,11 @@ id("background").width=scr.w;
 id("background").height=scr.h;
 canvas=id('canvas').getContext('2d');
 background=id('background').getContext('2d');
-readData();
+backupDay=window.localStorage.getItem('backupDay');
+if(backupDay) console.log('last backup on day '+backupDay);
+else backupDay=0;
+load();
+// readData();
 // populateList();
 // implement service worker if browser is PWA friendly 
 if (navigator.serviceWorker.controller) {

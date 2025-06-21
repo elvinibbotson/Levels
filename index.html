@@ -20,7 +20,7 @@
 <div id='graphBackground'><canvas id='background' x='0' y='0' width='100%' height='100%'></canvas></div>
 <div id='graphPanel'><canvas id='canvas' x='0' y='0' width='100%' height='100%'></canvas></div>
 <div id='buttonNew' class='round-button'><img src='newButton24px.svg'/></div>
-<div id='messageDialog' class='dialog'><p id='message'></p></div>
+<!--div id='messageDialog' class='dialog'><p id='message'></p></div-->
 <div id="logDialog" class="dialog">
     <div class="dialog-body">date <input type="date" id="logDate"/></div>
     <div class='dialog-title'>ENERGY input...</div>
@@ -46,13 +46,17 @@
 <div id='dataDialog' class='dialog'>
 	data
 	<button id='backupButton' class='text-button'>BACKUP</button>
-	<button id='importButton' class='text-button'>IMPORT</button>
+	<button id='restoreButton' class='text-button'>RESTORE</button>
 </div>
-<div id="importDialog" class="dialog">
-	<div class="dialog-title">Load from file</div>
+<div id="restoreDialog" class="dialog">
+	<div id='restoreMessage' class="dialog-title">Load from file</div>
 	<input type="file" id="fileChooser">
 	<p>(replaces any existing data)<br>
 	or swipe left to start anew</p>
+</div>
+<div id='backupDialog' class='dialog'>
+	<div id='backupMessage'>data backup</div>
+	<button id='confirmBackup' class='text-button'>BACKUP</button>
 </div>
 </div>
 <script src="LevelsScript.js" async></script>
