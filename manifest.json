@@ -1,6 +1,7 @@
 {
   "name": "Levels PWA",
   "short_name": "Levels",
+  "id":1.0,
   "icons": [
 	{
 		"src": "Levels.png",

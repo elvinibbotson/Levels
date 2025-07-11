@@ -201,7 +201,7 @@ function populateList() {
 		mon=parseInt(d.substr(5,2))-1;
 		mon*=3;
 		d=months.substr(mon,3)+" "+d.substr(2,2);
-		html='<span class="grey">'+d+'</span><span class="red">'+pad(logs[i].grid)+'</span><span class="green">'+pad(logs[i].pvA)+'</span><span class="yellow">'+pad(logs[i].pvB)+'</span><span class="blue">'+pad(logs[i].yield)+'</span><span class="orange">'+pad(logs[i].cons)+'</span>';
+		html='<span class="grey">'+d+'</span><span class="red">'+pad(logs[i].grid)+'</span><span class="green">'+pad(logs[i].pvA)+'</span><span class="blue">'+pad(logs[i].pvB)+'</span><span class="yellow">'+pad(logs[i].yield)+'</span><span class="orange">'+pad(logs[i].cons)+'</span>';
 		itemText.innerHTML=html;
 		listItem.appendChild(itemText);
 		id('list').appendChild(listItem);
